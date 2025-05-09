@@ -22,6 +22,10 @@ db.connect(err => {
   }
 });
 
+// Sua rota de exemplo
+app.get('/', (req, res) => {
+  res.send('🔐 API com HTTPS funcionando!');
+});
 
 app.get('/professores', (req, res) => {
   db.query('SELECT * FROM professores', (err, results) => {
@@ -31,6 +35,12 @@ app.get('/professores', (req, res) => {
     res.json(results);
   });
 });
+
+// Carregar os certificados SSL
+const options = {
+  key: fs.readFileSync('/etc/ssl/duckdns/key.pem'),
+  cert: fs.readFileSync('/etc/ssl/duckdns/fullchain.pem'),
+};
 
 const PORT = 3000;
 app.listen(PORT, () => {
