@@ -21,6 +21,7 @@ exports.create = (req, res) => {
   }
 
   const id = generateUUID(); // Gerar UUID para o novo professor
+  console.log(id);
 
   db.query(
     'INSERT INTO professores (id, nome, email) VALUES (?, ?, ?)',
