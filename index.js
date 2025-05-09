@@ -44,7 +44,7 @@ const options = {
   cert: fs.readFileSync('/etc/ssl/duckdns/fullchain.pem'),
 };
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`API rodando na porta ${PORT}`);
+// Iniciar servidor HTTPS
+https.createServer(options, app).listen(3000, () => {
+  console.log('Servidor HTTPS rodando em https://assistente-professor.duckdns.org:3000');
 });
