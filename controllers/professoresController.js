@@ -14,6 +14,7 @@ exports.getAll = (req, res) => {
 // Função para criar um novo professor
 exports.create = (req, res) => {
   const { nome, email } = req.body;
+  console.log(req.body);
 
   if (!nome || !email) {
     return res.status(400).json({ erro: 'Nome e email são obrigatórios.' });
