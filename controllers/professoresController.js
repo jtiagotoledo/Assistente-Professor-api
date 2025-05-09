@@ -1,21 +1,26 @@
 const db = require('../config/db');
-const generateUUID = require('../utils/uuid');
-
-exports.getAll = (req, res) => {
-  db.query('SELECT * FROM professores', (err, results) => {
-    if (err) return res.status(500).json({ erro: err.message });
-    res.json(results);
-  });
-};
+const generateUUID = require('../utils/uuid'); // Função que gera UUID
 
 exports.create = (req, res) => {
   const { nome, email } = req.body;
-  const id = generateUUID();
 
-  db.query('INSERT INTO professores (id, nome, email) VALUES (?, ?, ?)',
+  // Validação básica
+  if (!nome || !email) {
+    return res.status(400).json({ erro: 'Nome e email são obrigatórios.' });
+  }
+
+  // Gerar UUID para o novo professor
+  const id = generateUUID(); 
+
+  // Inserir no banco de dados
+  db.query(
+    'INSERT INTO professores (id, nome, email) VALUES (?, ?, ?)',
     [id, nome, email],
     (err) => {
-      if (err) return res.status(500).json({ erro: err.message });
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+
       res.status(201).json({ id, nome, email });
     }
   );
