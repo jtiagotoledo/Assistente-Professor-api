@@ -13,7 +13,7 @@ exports.getAll = (req, res) => {
 
 // Função para criar um novo professor
 exports.create = (req, res) => {
-  const { nome, email, uuid } = req.body;
+  const { nome, email, uuid, foto} = req.body;
   console.log(req.body);
 
   //uuid => firebase   id=> mariaDB
@@ -26,14 +26,14 @@ exports.create = (req, res) => {
   console.log('id gerado: ', id);
 
   db.query(
-    'INSERT INTO professores (id, uuid, nome, email) VALUES (?, ?, ?, ?)',
-    [id, uuid, nome, email],
+    'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
+    [id, uuid, nome, email, foto],
     (err) => {
       if (err) {
         return res.status(500).json({ erro: err.message });
       }
 
-      res.status(201).json({ id, uuid, nome, email });
+      res.status(201).json({ id, uuid, nome, email, foto });
     }
   );
 };
