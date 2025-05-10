@@ -13,25 +13,27 @@ exports.getAll = (req, res) => {
 
 // Função para criar um novo professor
 exports.create = (req, res) => {
-  const { nome, email } = req.body;
+  const { nome, email, uuid } = req.body;
   console.log(req.body);
 
-  if (!nome || !email) {
+  //uuid => firebase   id=> mariaDB
+
+  if (!nome || !email ||!uuid) {
     return res.status(400).json({ erro: 'Nome e email são obrigatórios.' });
   }
 
   const id = generateUUID(); // Gerar UUID para o novo professor
-  console.log(id);
+  console.log('id gerado: ',id);
 
   db.query(
-    'INSERT INTO professores (id, nome, email) VALUES (?, ?, ?)',
-    [id, nome, email],
+    'INSERT INTO professores (id, uuid, nome, email) VALUES (?, ?, ?, ?)',
+    [id, uuid, nome, email],
     (err) => {
       if (err) {
         return res.status(500).json({ erro: err.message });
       }
 
-      res.status(201).json({ id, nome, email });
+      res.status(201).json({ id, uuid, nome, email });
     }
   );
 };

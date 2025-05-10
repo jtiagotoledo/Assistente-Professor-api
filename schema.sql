@@ -1,8 +1,10 @@
 -- Professores
 CREATE TABLE IF NOT EXISTS professores (
     id CHAR(36) PRIMARY KEY,
-    nome VARCHAR(100),
-    email VARCHAR(100)
+    uuid VARCHAR(128) NOT NULL UNIQUE,
+    nome VARCHAR(255),
+    email VARCHAR(255),
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Períodos
