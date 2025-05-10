@@ -22,37 +22,21 @@ exports.create = (req, res) => {
     return res.status(400).json({ erro: 'Nome, email e uuid são obrigatórios.' });
   }
 
-  // Verificar se o professor já existe com esse UUID
-  db.query('SELECT * FROM professores WHERE uuid = ?', [uuid], (err, results) => {
-    if (err) {
-      console.log('err consilta professor', err.message);
-      
-      return res.status(500).json({ erro: err.message });
-    }
+  // Gerar um novo ID para o professor (ID do banco de dados)
+  const id = generateUUID(); // Gerar UUID para o novo professor
+  console.log('id gerado: ', id);
 
-    // Se o professor já existe, retorna um erro
-    if (results.length > 0) {
-      console.log('resultados', results);
-
-      return res.status(400).json({ erro: 'Professor já existe.' });
-    }
-
-    // Gerar um novo ID para o professor (ID do banco de dados)
-    const id = generateUUID(); // Gerar UUID para o novo professor
-    console.log('id gerado: ', id);
-
-    // Inserir o novo professor no banco de dados
-    db.query(
-      'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
-      [id, uuid, nome, email, foto],
-      (err) => {
-        if (err) {
-          return res.status(500).json({ erro: err.message });
-        }
-
-        // Resposta de sucesso
-        res.status(201).json({ id, uuid, nome, email, foto });
+  // Inserir o novo professor no banco de dados
+  db.query(
+    'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
+    [id, uuid, nome, email, foto],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
       }
-    );
-  });
+
+      // Resposta de sucesso
+      res.status(201).json({ id, uuid, nome, email, foto });
+    }
+  );
 };
