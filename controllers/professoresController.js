@@ -18,12 +18,12 @@ exports.create = (req, res) => {
 
   //uuid => firebase   id=> mariaDB
 
-  if (!nome || !email ||!uuid) {
-    return res.status(400).json({ erro: 'Nome e email são obrigatórios.' });
+  if (!nome || !email || !uuid) {
+    return res.status(400).json({ erro: 'Nome, email e uuid são obrigatórios.' });
   }
 
   const id = generateUUID(); // Gerar UUID para o novo professor
-  console.log('id gerado: ',id);
+  console.log('id gerado: ', id);
 
   db.query(
     'INSERT INTO professores (id, uuid, nome, email) VALUES (?, ?, ?, ?)',
