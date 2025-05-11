@@ -3,6 +3,8 @@ const generateUUID = require('../utils/uuid');
 
 // Registrar um novo acesso (id e email do professor vêm na requisição)
 exports.registrarAcesso = (req, res) => {
+    console.log("reg acesso", req.body);
+    
   const { id_professor, email_professor } = req.body;
 
   if (!id_professor || !email_professor) {
