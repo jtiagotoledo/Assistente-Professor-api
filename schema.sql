@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS acessos (
     id_professor CHAR(36) NOT NULL,
     email_professor VARCHAR(255) NOT NULL,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_professor) REFERENCES professores(id)
+    FOREIGN KEY (id_professor) REFERENCES professores(uuid)
 );
 
 -- Períodos
