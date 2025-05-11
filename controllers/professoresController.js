@@ -1,5 +1,5 @@
 const db = require('../config/db');
-const generateUUID = require('../utils/uuid'); // Importar a função para gerar UUID
+const generateUUID = require('../utils/uuid'); 
 
 // Função para buscar um professor pelo UUID (uid do Firebase)
 exports.getByUUID = (req, res) => {
