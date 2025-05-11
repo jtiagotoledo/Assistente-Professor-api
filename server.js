@@ -15,7 +15,7 @@ app.use(express.json());
 const professoresRoutes = require('./routes/professoresRoutes');
 app.use('/professores', professoresRoutes);
 const acessosRoutes = require('./routes/acessosRoutes');
-app.use('/professores', acessosRoutes);
+app.use('/professores/acesso', acessosRoutes);
 
 app.get('/', (req, res) => {
   res.send('🔐 API com HTTPS funcionando!');
