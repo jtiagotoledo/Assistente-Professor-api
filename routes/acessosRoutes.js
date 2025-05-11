@@ -4,6 +4,6 @@ const router = express.Router();
 const acessoController = require('../controllers/acessoController');
 
 // Rota para registrar um acesso
-router.post('/professores/acesso', acessoController.registrarAcesso);
+router.post('/', acessoController.registrarAcesso);
 
 module.exports = router;
