@@ -8,6 +8,15 @@ CREATE TABLE IF NOT EXISTS professores (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Acessos
+CREATE TABLE IF NOT EXISTS acessos (
+    id CHAR(36) PRIMARY KEY,
+    id_professor CHAR(36) NOT NULL,
+    email_professor VARCHAR(255) NOT NULL,
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_professor) REFERENCES professores(id)
+);
+
 -- Períodos
 CREATE TABLE IF NOT EXISTS periodos (
     id CHAR(36) PRIMARY KEY,
