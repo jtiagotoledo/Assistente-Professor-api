@@ -4,6 +4,6 @@ const controller = require('../controllers/professoresController');
 
 router.get('/', controller.getAll);
 router.post('/', controller.create);
-router.get('/uuid/:uuid', professorController.getByUUID);
+router.get('/uuid/:uuid', controller.getByUUID);
 
 module.exports = router;
