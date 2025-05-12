@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const acessoController = require('../controllers/acessoController');
+const acessosController = require('../controllers/acessosController');
 
 // Rota para registrar um acesso
-router.post('/', acessoController.registrarAcesso);
+router.post('/', acessosController.registrarAcesso);
 
 module.exports = router;

@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const periodosController = require('../controllers/periodosController');
+
+// Buscar todos os períodos de um professor
+router.get('/:id_professor', periodosController.getByProfessor);
+
+// Criar novo período
+router.post('/', periodosController.create);
+
+module.exports = router;

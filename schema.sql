@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS acessos (
 CREATE TABLE IF NOT EXISTS periodos (
     id CHAR(36) PRIMARY KEY,
     nome VARCHAR(100),
-    ano INT,
     id_professor CHAR(36),
     FOREIGN KEY (id_professor) REFERENCES professores(id)
 );
