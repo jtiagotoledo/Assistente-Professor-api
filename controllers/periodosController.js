@@ -6,7 +6,7 @@ exports.getByProfessor = (req, res) => {
   const { id_professor } = req.params;
 
   db.query(
-    'SELECT * FROM periodos WHERE id_professor = ?',
+    'SELECT * FROM periodos WHERE id_professor = ? ORDER BY nome ASC',
     [id_professor],
     (err, results) => {
       if (err) {
