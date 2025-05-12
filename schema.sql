@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS alunos (
 CREATE TABLE IF NOT EXISTS frequencias (
     id CHAR(36) PRIMARY KEY,
     data DATE,
+    atividades VARCHAR(100),
     presente BOOLEAN,
     id_aluno CHAR(36),
     FOREIGN KEY (id_aluno) REFERENCES alunos(id)
@@ -55,7 +56,8 @@ CREATE TABLE IF NOT EXISTS frequencias (
 -- Notas
 CREATE TABLE IF NOT EXISTS notas (
     id CHAR(36) PRIMARY KEY,
-    descricao VARCHAR(100),
+    data DATE,
+    titulo VARCHAR(100),
     valor DECIMAL(5,2),
     id_aluno CHAR(36),
     FOREIGN KEY (id_aluno) REFERENCES alunos(id)
