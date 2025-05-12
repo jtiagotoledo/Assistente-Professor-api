@@ -19,6 +19,7 @@ exports.getByProfessor = (req, res) => {
 
 // Criar um novo período
 exports.create = (req, res) => {
+  console.log(req.body)
   const { nome, id_professor } = req.body;
 
   if (!nome || !id_professor) {
