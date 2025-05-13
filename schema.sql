@@ -29,9 +29,7 @@ CREATE TABLE IF NOT EXISTS periodos (
 CREATE TABLE IF NOT EXISTS classes (
     id CHAR(36) PRIMARY KEY,
     nome VARCHAR(100),
-    id_professor CHAR(36),
     id_periodo CHAR(36),
-    FOREIGN KEY (id_professor) REFERENCES professores(id),
     FOREIGN KEY (id_periodo) REFERENCES periodos(id)
 );
 
