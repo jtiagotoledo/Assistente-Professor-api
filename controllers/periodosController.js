@@ -40,3 +40,27 @@ exports.create = (req, res) => {
     }
   );
 };
+
+// atualizar um período
+exports.update = (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+
+  if (!nome) {
+    return res.status(400).json({ erro: 'O nome é obrigatório.' });
+  }
+
+  db.query(
+    'UPDATE periodos SET nome = ? WHERE id = ?',
+    [nome, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Período não encontrado.' });
+      }
+      res.status(200).json({ mensagem: 'Período atualizado com sucesso.' });
+    }
+  );
+};

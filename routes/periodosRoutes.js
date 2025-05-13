@@ -8,4 +8,7 @@ router.get('/:id_professor', periodosController.getByProfessor);
 // Criar novo período
 router.post('/', periodosController.create);
 
+// atualizar período
+router.put('/:id', periodosController.update);
+
 module.exports = router;
