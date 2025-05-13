@@ -39,3 +39,29 @@ exports.create = (req, res) => {
     }
   );
 };
+
+// Atualizar uma classe
+exports.update = (req, res) => {
+  const { id } = req.params; 
+  const { nome, id_periodo } = req.body; 
+
+  if (!nome || !id_periodo) {
+    return res.status(400).json({ erro: 'Nome e id_periodo são obrigatórios.' });
+  }
+
+  db.query(
+    'UPDATE classes SET nome = ?, id_periodo = ? WHERE id = ?',
+    [nome, id_periodo, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Classe não encontrada.' });
+      }
+
+      res.status(200).json({ mensagem: 'Classe atualizada com sucesso.' });
+    }
+  );
+};

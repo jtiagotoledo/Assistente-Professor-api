@@ -8,4 +8,7 @@ router.get('/:id_periodo', classesController.getByPeriodo);
 // Criar nova classe
 router.post('/', classesController.create);
 
+// Atualizar uma classe
+router.put('/:id', classesController.update);
+
 module.exports = router;
