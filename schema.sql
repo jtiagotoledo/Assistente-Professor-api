@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS classes (
 -- Alunos
 CREATE TABLE IF NOT EXISTS alunos (
     id CHAR(36) PRIMARY KEY,             
-    numero INT NOT NULL,                      
+    numero VARCHAR(100) NOT NULL,                      
     nome VARCHAR(100) NOT NULL,               
     inativo BOOLEAN DEFAULT FALSE,            
     media_notas DECIMAL(5,2),                  

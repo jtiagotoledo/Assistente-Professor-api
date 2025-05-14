@@ -34,6 +34,6 @@ const options = {
 };
 
 // Iniciar servidor HTTPS
-https.createServer(options, app).listen(3000,'0.0.0.0', () => {
+https.createServer(options, app).listen(3000, () => {
   console.log('Servidor rodando em https://assistente-professor.duckdns.org:3000');
 });
