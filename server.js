@@ -20,6 +20,8 @@ const periodosRoutes = require('./routes/periodosRoutes');
 app.use('/periodos', periodosRoutes);
 const classesRoutes = require('./routes/classesRoutes');
 app.use('/classes', classesRoutes);
+const alunosRoutes = require('./routes/alunosRoutes');
+app.use('/alunos', alunosRoutes);
 
 app.get('/', (req, res) => {
   res.send('🔐 API com HTTPS funcionando!');
