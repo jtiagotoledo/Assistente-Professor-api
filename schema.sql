@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS classes (
     FOREIGN KEY (id_periodo) REFERENCES periodos(id)
 );
 
-CREATE TABLE alunos (
+-- Alunos
+CREATE TABLE IF NOT EXISTS alunos (
     id CHAR(36) PRIMARY KEY,             
     numero INT NOT NULL,                      
     nome VARCHAR(100) NOT NULL,               
