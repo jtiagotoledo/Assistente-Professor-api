@@ -25,7 +25,7 @@ exports.create = (req, res) => {
 exports.getByClasse = (req, res) => {
   const { id_classe } = req.params;
 
-  db.query('SELECT * FROM alunos WHERE id_classe = ?', [id_classe], (err, results) => {
+  db.query('SELECT * FROM alunos WHERE id_classe = ? ORDER BY numero ASC', [id_classe], (err, results) => {
     if (err) return res.status(500).json({ erro: err.message });
     res.json(results);
   });
