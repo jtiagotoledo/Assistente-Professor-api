@@ -26,7 +26,7 @@ exports.getByClasse = (req, res) => {
   const { id_classe } = req.params;
 
   db.query(
-    'SELECT * FROM datas_notas WHERE id_classe = ? ORDER BY data ASC',
+    'SELECT * FROM datas_nota WHERE id_classe = ? ORDER BY data ASC',
     [id_classe],
     (err, results) => {
       if (err) return res.status(500).json({ erro: err.message });
