@@ -22,6 +22,11 @@ const classesRoutes = require('./routes/classesRoutes');
 app.use('/classes', classesRoutes);
 const alunosRoutes = require('./routes/alunosRoutes');
 app.use('/alunos', alunosRoutes);
+const datasFrequenciaRoutes = require('./routes/datasFrequenciaRoutes');
+app.use('/datas-frequencia', datasFrequenciaRoutes);
+const datasNotasRoutes = require('./routes/datasNotasRoutes');
+app.use('/datas-notas', datasNotasRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('🔐 API com HTTPS funcionando!');
