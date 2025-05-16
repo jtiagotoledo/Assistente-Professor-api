@@ -12,7 +12,7 @@ exports.create = (req, res) => {
   const id = generateUUID();
 
   db.query(
-    'INSERT INTO datas_notas (id, data, id_classe) VALUES (?, ?, ?)',
+    'INSERT INTO datas_nota (id, data, id_classe) VALUES (?, ?, ?)',
     [id, data, id_classe],
     (err) => {
       if (err) return res.status(500).json({ erro: err.message });
