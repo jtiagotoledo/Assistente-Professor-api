@@ -34,3 +34,23 @@ exports.getByDataFrequencia = (req, res) => {
     }
   );
 };
+
+
+// Atualizar frequência
+exports.update = (req, res) => {
+  const { id } = req.params;
+  const { presente } = req.body;
+
+  if (typeof presente !== 'boolean') {
+    return res.status(400).json({ erro: 'Campo "presente" deve ser booleano (true ou false)' });
+  }
+
+  db.query(
+    'UPDATE frequencias SET presente = ? WHERE id = ?',
+    [presente, id],
+    (err) => {
+      if (err) return res.status(500).json({ erro: err.message });
+      res.json({ mensagem: 'Frequência atualizada com sucesso' });
+    }
+  );
+};
