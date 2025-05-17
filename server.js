@@ -12,20 +12,15 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-const professoresRoutes = require('./routes/professoresRoutes');
-app.use('/professores', professoresRoutes);
-const acessosRoutes = require('./routes/acessosRoutes');
-app.use('/professores/acesso', acessosRoutes);
-const periodosRoutes = require('./routes/periodosRoutes');
-app.use('/periodos', periodosRoutes);
-const classesRoutes = require('./routes/classesRoutes');
-app.use('/classes', classesRoutes);
-const alunosRoutes = require('./routes/alunosRoutes');
-app.use('/alunos', alunosRoutes);
-const datasFrequenciaRoutes = require('./routes/datasFrequenciaRoutes');
-app.use('/datas-frequencia', datasFrequenciaRoutes);
-const datasNotasRoutes = require('./routes/datasNotasRoutes');
-app.use('/datas-notas', datasNotasRoutes);
+app.use('/professores', require('./routes/professoresRoutes'));
+app.use('/professores/acesso', require('./routes/acessosRoutes'));
+app.use('/periodos', require('./routes/periodosRoutes'));
+app.use('/classes', require('./routes/classesRoutes'));
+app.use('/alunos', require('./routes/alunosRoutes'));
+app.use('/datas-frequencia', require('./routes/datasFrequenciaRoutes'));
+app.use('/datas-notas', require('./routes/datasNotasRoutes'));
+app.use('/frequencias', require('./routes/frequenciasRoutes'));
+app.use('/notas', require('./routes/notasRoutes'));
 
 
 app.get('/', (req, res) => {
