@@ -54,3 +54,28 @@ exports.update = (req, res) => {
     }
   );
 };
+
+exports.getFrequenciasPorClasseEData = async (req, res) => {
+  const { id_classe, data } = req.params;
+
+  try {
+    const [frequencias] = await db.execute(
+      `SELECT 
+         f.id AS id_frequencia,
+         f.presente,
+         a.id AS id_aluno,
+         a.nome,
+         a.numero
+       FROM frequencias f
+       JOIN alunos a ON f.id_aluno = a.id
+       JOIN datas_frequencia df ON f.id_data_frequencia = df.id
+       WHERE df.id_classe = ? AND df.data = ?`,
+      [id_classe, data]
+    );
+
+    res.status(200).json(frequencias);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).json({ erro: 'Erro ao buscar frequências' });
+  }
+};
