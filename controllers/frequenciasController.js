@@ -76,7 +76,6 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
         return res.status(404).json({ erro: 'Data de frequência não encontrada para essa classe' });
       }
 
-      // ✅ Correção aplicada aqui
       const id_data_frequencia = resultados[0].id_data_frequencia;
       console.log('ID da data_frequencia:', id_data_frequencia);
 
