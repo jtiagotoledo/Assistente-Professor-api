@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS notas (
     id CHAR(36) PRIMARY KEY,
     id_data_nota CHAR(36) NOT NULL,
     id_aluno CHAR(36) NOT NULL,
-    valor DECIMAL(5,2),
+    nota DECIMAL(5,2),
     INDEX idx_notas_id_data_nota (id_data_nota),
     INDEX idx_notas_id_aluno (id_aluno),
     FOREIGN KEY (id_data_nota) REFERENCES datas_nota(id),
