@@ -4,8 +4,8 @@ const generateUUID = require('../utils/uuid');
 // Criar nota
 exports.create = (req, res) => {
   const { id_data_nota, id_aluno, nota } = req.body;
-  console.log('req.body criar nota',req.body);
-  
+  console.log('req.body criar nota', req.body);
+
 
   if (!id_data_nota || !id_aluno || nota === undefined) {
     return res.status(400).json({ erro: 'Campos obrigatórios: id_data_nota, id_aluno, valor' });
@@ -43,11 +43,11 @@ exports.update = (req, res) => {
   const { nota } = req.body;
 
   if (nota === undefined || isNaN(nota)) {
-    return res.status(400).json({ erro: 'Campo "valor" deve ser um número' });
+    return res.status(400).json({ erro: 'Nota inválida' });
   }
 
   db.query(
-    'UPDATE notas SET valor = ? WHERE id = ?',
+    'UPDATE notas SET nota = ? WHERE id = ?',
     [nota, id],
     (err) => {
       if (err) return res.status(500).json({ erro: err.message });
