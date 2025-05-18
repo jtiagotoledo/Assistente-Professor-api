@@ -83,7 +83,8 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
         `SELECT f.id, f.presente, a.id as id_aluno, a.nome, a.numero 
          FROM frequencias f
          JOIN alunos a ON f.id_aluno = a.id
-         WHERE f.id_data_frequencia = ?`,
+         WHERE f.id_data_frequencia = ?
+         ORDER BY a.numero ASC`,
         [id_data_frequencia],
         (err, frequencias) => {
           if (err) {
@@ -98,3 +99,4 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
     }
   );
 };
+
