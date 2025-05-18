@@ -78,7 +78,7 @@ exports.getNotasPorClasseEData = (req, res) => {
         return res.status(404).json({ erro: 'Data de nota não encontrada para essa classe' });
       }
 
-      const id_data_nota = resultados[0].id;
+      const id_data_nota = resultados[0].id_data_frequencia;
       console.log('ID da data_nota:', id_data_nota);
 
       db.query(
