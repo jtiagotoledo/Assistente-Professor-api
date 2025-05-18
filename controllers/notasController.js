@@ -40,15 +40,15 @@ exports.getByDataNota = (req, res) => {
 // Atualizar nota
 exports.update = (req, res) => {
   const { id } = req.params;
-  const { valor } = req.body;
+  const { nota } = req.body;
 
-  if (valor === undefined || isNaN(valor)) {
+  if (nota === undefined || isNaN(nota)) {
     return res.status(400).json({ erro: 'Campo "valor" deve ser um número' });
   }
 
   db.query(
     'UPDATE notas SET valor = ? WHERE id = ?',
-    [valor, id],
+    [nota, id],
     (err) => {
       if (err) return res.status(500).json({ erro: err.message });
       res.json({ mensagem: 'Nota atualizada com sucesso' });
