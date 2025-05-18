@@ -4,6 +4,8 @@ const generateUUID = require('../utils/uuid');
 // Criar nota
 exports.create = (req, res) => {
   const { id_data_nota, id_aluno, valor } = req.body;
+  console.log('req.body criar nota',req.body);
+  
 
   if (!id_data_nota || !id_aluno || valor === undefined) {
     return res.status(400).json({ erro: 'Campos obrigatórios: id_data_nota, id_aluno, valor' });
