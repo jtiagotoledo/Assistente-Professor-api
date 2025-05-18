@@ -85,7 +85,8 @@ exports.getNotasPorClasseEData = (req, res) => {
         `SELECT n.id, n.nota, a.id as id_aluno, a.nome, a.numero 
          FROM notas n
          JOIN alunos a ON n.id_aluno = a.id
-         WHERE n.id_data_nota = ?`,
+         WHERE n.id_data_nota = ?
+         ORDER BY a.numero ASC`,
         [id_data_nota],
         (err, notas) => {
           if (err) {
@@ -100,3 +101,4 @@ exports.getNotasPorClasseEData = (req, res) => {
     }
   );
 };
+

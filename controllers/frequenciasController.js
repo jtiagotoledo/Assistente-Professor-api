@@ -39,7 +39,6 @@ exports.getByDataFrequencia = (req, res) => {
 exports.update = (req, res) => {
   const { id } = req.params;
   const { presente } = req.body;
-  
 
   if (typeof presente !== 'boolean') {
     return res.status(400).json({ erro: 'Campo "presente" deve ser booleano (true ou false)' });
