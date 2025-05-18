@@ -59,17 +59,26 @@ exports.update = (req, res) => {
 exports.getFrequenciasPorClasseEData = (req, res) => {
   const { id_classe, data } = req.params;
 
+  console.log('Classe:', id_classe);
+  console.log('Data:', data);
+
   db.query(
     'SELECT df.id as id_data_frequencia FROM datas_frequencia df WHERE df.id_classe = ? AND df.data = ?',
     [id_classe, data],
     (err, resultados) => {
-      if (err) return res.status(500).json({ erro: err.message });
+      if (err) {
+        console.error('Erro ao buscar data_frequencia:', err);
+        return res.status(500).json({ erro: err.message });
+      }
+
+      console.log('Resultado da busca em datas_frequencia:', resultados);
 
       if (resultados.length === 0) {
         return res.status(404).json({ erro: 'Data de frequência não encontrada para essa classe' });
       }
 
       const id_data_frequencia = resultados[0].id;
+      console.log('ID da data_frequencia:', id_data_frequencia);
 
       db.query(
         `SELECT f.id, f.presente, a.id as id_aluno, a.nome, a.numero 
@@ -78,7 +87,12 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
          WHERE f.id_data_frequencia = ?`,
         [id_data_frequencia],
         (err, frequencias) => {
-          if (err) return res.status(500).json({ erro: err.message });
+          if (err) {
+            console.error('Erro ao buscar frequencias:', err);
+            return res.status(500).json({ erro: err.message });
+          }
+
+          console.log('Resultado da busca em frequencias:', frequencias);
           res.json(frequencias);
         }
       );
