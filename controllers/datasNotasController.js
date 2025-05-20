@@ -3,7 +3,7 @@ const generateUUID = require('../utils/uuid');
 
 // Criar nova data de nota
 exports.create = (req, res) => {
-  const { data, id_classe } = req.body;
+  const { data, id_classe, titulo } = req.body;
 
   if (!data || !id_classe) {
     return res.status(400).json({ erro: 'Campos obrigatórios: data e id_classe' });
@@ -12,16 +12,16 @@ exports.create = (req, res) => {
   const id = generateUUID();
 
   db.query(
-    'INSERT INTO datas_nota (id, data, id_classe) VALUES (?, ?, ?)',
-    [id, data, id_classe],
+    'INSERT INTO datas_nota (id, data, id_classe, titulo) VALUES (?, ?, ?, ?)',
+    [id, data, id_classe, titulo || ''],
     (err) => {
       if (err) return res.status(500).json({ erro: err.message });
-      res.status(201).json({ id, data, id_classe });
+      res.status(201).json({ id, data, id_classe, titulo: titulo || '' });
     }
   );
 };
 
-// Buscar datas de notas por classe
+// Buscar datas de nota por classe
 exports.getByClasse = (req, res) => {
   const { id_classe } = req.params;
 
@@ -31,6 +31,27 @@ exports.getByClasse = (req, res) => {
     (err, results) => {
       if (err) return res.status(500).json({ erro: err.message });
       res.json(results);
+    }
+  );
+};
+
+// Buscar título por data e id_classe
+exports.getTituloByDataAndClasse = (req, res) => {
+  const { data, id_classe } = req.query;
+
+  if (!data || !id_classe) {
+    return res.status(400).json({ erro: 'Campos obrigatórios: data e id_classe' });
+  }
+
+  db.query(
+    'SELECT titulo FROM datas_nota WHERE data = ? AND id_classe = ?',
+    [data, id_classe],
+    (err, results) => {
+      if (err) return res.status(500).json({ erro: err.message });
+      if (results.length === 0) {
+        return res.status(404).json({ erro: 'Título não encontrado' });
+      }
+      res.json(results[0]);
     }
   );
 };
