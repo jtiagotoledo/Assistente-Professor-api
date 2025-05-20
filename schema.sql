@@ -1,4 +1,4 @@
--- Professores
+-- 1. Professores
 CREATE TABLE IF NOT EXISTS professores (
     id CHAR(36) PRIMARY KEY,
     uuid VARCHAR(128) NOT NULL UNIQUE,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS professores (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Acessos
+-- 2. Acessos
 CREATE TABLE IF NOT EXISTS acessos (
     id CHAR(36) PRIMARY KEY,
     id_professor CHAR(36) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS acessos (
     INDEX idx_acessos_id_professor (id_professor)
 );
 
--- Períodos
+-- 3. Períodos
 CREATE TABLE IF NOT EXISTS periodos (
     id CHAR(36) PRIMARY KEY,
     nome VARCHAR(100),
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS periodos (
     INDEX idx_periodos_id_professor (id_professor)
 );
 
--- Classes
+-- 4. Classes
 CREATE TABLE IF NOT EXISTS classes (
     id CHAR(36) PRIMARY KEY,
     nome VARCHAR(100),
@@ -36,43 +36,43 @@ CREATE TABLE IF NOT EXISTS classes (
     INDEX idx_classes_id_periodo (id_periodo)
 );
 
--- Alunos
+-- 5. Alunos
 CREATE TABLE IF NOT EXISTS alunos (
-    id CHAR(36) PRIMARY KEY,             
-    numero INT NOT NULL,                      
-    nome VARCHAR(100) NOT NULL,                
-    inativo BOOLEAN DEFAULT FALSE,            
-    media_notas DECIMAL(5,2),                  
-    porc_frequencia DECIMAL(5,2),       
-    id_classe CHAR(36),                        
+    id CHAR(36) PRIMARY KEY,
+    numero INT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    inativo BOOLEAN DEFAULT FALSE,
+    media_notas DECIMAL(5,2),
+    porc_frequencia DECIMAL(5,2),
+    id_classe CHAR(36),
     FOREIGN KEY (id_classe) REFERENCES classes(id),
     INDEX idx_alunos_id_classe (id_classe),
     INDEX idx_alunos_numero (numero)
 );
 
--- Tabela de datas de chamada (frequência) por classe
+-- 6. Datas de chamada (frequência)
 CREATE TABLE IF NOT EXISTS datas_frequencia (
     id CHAR(36) PRIMARY KEY,
     data DATE NOT NULL,
     id_classe CHAR(36) NOT NULL,
-    atividade VARCHAR(255),
+    atividade VARCHAR(255) DEFAULT '',
     INDEX idx_datas_frequencia_id_classe (id_classe),
     INDEX idx_datas_frequencia_data ON datas_frequencia(data),
     FOREIGN KEY (id_classe) REFERENCES classes(id)
 );
 
--- Tabela de datas de avaliação por classe
+-- 7. Datas de avaliação (notas)
 CREATE TABLE IF NOT EXISTS datas_nota (
     id CHAR(36) PRIMARY KEY,
     data DATE NOT NULL,
     id_classe CHAR(36) NOT NULL,
-    titulo VARCHAR(255),
+    titulo VARCHAR(255) DEFAULT '',
     INDEX idx_datas_nota_id_classe (id_classe),
     INDEX idx_datas_nota_titulo (titulo),
     FOREIGN KEY (id_classe) REFERENCES classes(id)
 );
 
--- Frequências dos alunos por data de chamada
+-- 8. Frequências dos alunos
 CREATE TABLE IF NOT EXISTS frequencias (
     id CHAR(36) PRIMARY KEY,
     id_data_frequencia CHAR(36) NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS frequencias (
     FOREIGN KEY (id_aluno) REFERENCES alunos(id)
 );
 
--- Notas dos alunos por data de avaliação
+-- 9. Notas dos alunos
 CREATE TABLE IF NOT EXISTS notas (
     id CHAR(36) PRIMARY KEY,
     id_data_nota CHAR(36) NOT NULL,
@@ -95,5 +95,3 @@ CREATE TABLE IF NOT EXISTS notas (
     FOREIGN KEY (id_data_nota) REFERENCES datas_nota(id),
     FOREIGN KEY (id_aluno) REFERENCES alunos(id)
 );
-
-
