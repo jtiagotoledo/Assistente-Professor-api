@@ -3,6 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/datasFrequenciaController');
 
 router.post('/', controller.create);
+router.get('/buscar-atividade', controller.getAtividadeByDataAndClasse);
 router.get('/:id_classe', controller.getByClasse);
 
 module.exports = router;
