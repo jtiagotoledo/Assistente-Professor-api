@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS datas_frequencia (
     id_classe CHAR(36) NOT NULL,
     atividade VARCHAR(255),
     INDEX idx_datas_frequencia_id_classe (id_classe),
-    INDEX idx_datas_frequencia_data ON datas_frequencia(data);
+    INDEX idx_datas_frequencia_data ON datas_frequencia(data),
     FOREIGN KEY (id_classe) REFERENCES classes(id)
 );
 
