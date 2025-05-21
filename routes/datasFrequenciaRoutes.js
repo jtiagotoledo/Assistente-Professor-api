@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/datasNotasController');
+const controller = require('../controllers/datasFrequenciaController');
 
 router.post('/', controller.create);
-router.get('/buscar-titulo', controller.getTituloByDataAndClasse);
+router.get('/buscar-atividade', controller.getAtividadeByDataAndClasse);
 router.get('/:id_classe', controller.getByClasse);
 
 module.exports = router;
