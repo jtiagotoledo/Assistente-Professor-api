@@ -63,21 +63,22 @@ exports.updateAtividade = (req, res) => {
   const { id } = req.params;
   const { atividade } = req.body;
 
-  try {
-    const [resultado] = db.query(
-      'UPDATE datas_frequencia SET atividade = ? WHERE id = ?',
-      [atividade, id]
-    );
-
-    if (resultado.affectedRows === 0) {
-      return res.status(404).json({ mensagem: 'Data de frequência não encontrada.' });
-    }
-
-    res.status(200).json({ mensagem: 'Atividade atualizada com sucesso.' });
-  } catch (erro) {
-    console.error('Erro ao atualizar atividade:', erro);
-    res.status(500).json({ erro: 'Erro ao atualizar atividade.' });
+  if (!atividade) {
+    return res.status(400).json({ erro: 'Campo obrigatório: atividade' });
   }
-};
 
+  db.query(
+    'UPDATE datas_frequencia SET atividade = ? WHERE id = ?',
+    [atividade, id],
+    (err, resultado) => {
+      if (err) return res.status(500).json({ erro: err.message });
+
+      if (resultado.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Data de frequência não encontrada' });
+      }
+
+      res.status(200).json({ mensagem: 'Atividade atualizada com sucesso', id, atividade });
+    }
+  );
+};
 
