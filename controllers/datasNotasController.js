@@ -55,3 +55,26 @@ exports.getTituloByDataAndClasse = (req, res) => {
     }
   );
 };
+
+exports.updateTitulo = (req, res) => {
+  const { id } = req.params;
+  const { titulo } = req.body;
+
+  if (!titulo) {
+    return res.status(400).json({ erro: 'Campo obrigatório: titulo' });
+  }
+
+  db.query(
+    'UPDATE datas_nota SET titulo = ? WHERE id = ?',
+    [titulo, id],
+    (err, resultado) => {
+      if (err) return res.status(500).json({ erro: err.message });
+
+      if (resultado.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Data de nota não encontrada' });
+      }
+
+      res.status(200).json({ mensagem: 'Título atualizado com sucesso', id, titulo });
+    }
+  );
+};
