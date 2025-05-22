@@ -78,3 +78,29 @@ exports.updateTitulo = (req, res) => {
     }
   );
 };
+
+// Buscar ID e título por data e id_classe
+exports.getIdTituloByDataAndClasse = (req, res) => {
+  const { data, id_classe } = req.query;
+
+  if (!data || !id_classe) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: data e id_classe' });
+  }
+
+  db.query(
+    'SELECT id, titulo FROM datas_nota WHERE data = ? AND id_classe = ? LIMIT 1',
+    [data, id_classe],
+    (err, results) => {
+      if (err) return res.status(500).json({ erro: err.message });
+
+      if (results.length === 0) {
+        return res.status(404).json({ erro: 'ID não encontrado para os parâmetros informados' });
+      }
+
+      res.json({ 
+        id: results[0].id,
+        titulo: results[0].titulo
+      });
+    }
+  );
+};
