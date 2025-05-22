@@ -91,7 +91,7 @@ exports.getIdByDataAndClasse = (req, res) => {
   }
 
   db.query(
-    'SELECT id FROM datas_frequencia WHERE data = ? AND id_classe = ? LIMIT 1',
+    'SELECT id, atividade FROM datas_frequencia WHERE data = ? AND id_classe = ? LIMIT 1',
     [data, id_classe],
     (err, results) => {
       if (err) return res.status(500).json({ erro: err.message });
@@ -100,9 +100,10 @@ exports.getIdByDataAndClasse = (req, res) => {
         return res.status(404).json({ erro: 'ID não encontrado para os parâmetros informados' });
       }
 
-      res.json({ id: results[0].id,
-          aticidade: results[0].atividade
-       });
+      res.json({ 
+        id: results[0].id,
+        atividade: results[0].atividade 
+      });
     }
   );
 };
