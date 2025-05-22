@@ -82,3 +82,26 @@ exports.updateAtividade = (req, res) => {
   );
 };
 
+// Buscar ID por data e id_classe
+exports.getIdByDataAndClasse = (req, res) => {
+  const { data, id_classe } = req.query;
+
+  if (!data || !id_classe) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: data e id_classe' });
+  }
+
+  db.query(
+    'SELECT id FROM datas_frequencia WHERE data = ? AND id_classe = ? LIMIT 1',
+    [data, id_classe],
+    (err, results) => {
+      if (err) return res.status(500).json({ erro: err.message });
+
+      if (results.length === 0) {
+        return res.status(404).json({ erro: 'ID não encontrado para os parâmetros informados' });
+      }
+
+      res.json({ id: results[0].id });
+    }
+  );
+};
+
