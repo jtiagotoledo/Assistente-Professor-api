@@ -100,7 +100,9 @@ exports.getIdByDataAndClasse = (req, res) => {
         return res.status(404).json({ erro: 'ID não encontrado para os parâmetros informados' });
       }
 
-      res.json({ id: results[0].id });
+      res.json({ id: results[0].id,
+          aticidade: results[0].atividade
+       });
     }
   );
 };
