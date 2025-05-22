@@ -4,7 +4,7 @@ const controller = require('../controllers/datasFrequenciaController');
 
 router.post('/', controller.create);
 router.get('/buscar-atividade', controller.getAtividadeByDataAndClasse);
-router.get('/buscar-id', controller.getIdByDataAndClasse);
+router.get('/buscar-id-atividade', controller.getIdAtivByDataAndClasse);
 router.get('/:id_classe', controller.getByClasse);
 router.put('/:id', controller.updateAtividade);
 

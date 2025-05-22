@@ -83,7 +83,7 @@ exports.updateAtividade = (req, res) => {
 };
 
 // Buscar ID por data e id_classe
-exports.getIdByDataAndClasse = (req, res) => {
+exports.getIdAtivByDataAndClasse = (req, res) => {
   const { data, id_classe } = req.query;
 
   if (!data || !id_classe) {
