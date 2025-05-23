@@ -102,22 +102,25 @@ exports.getNotasPorClasseEData = (req, res) => {
   );
 };
 
-// Buscar todas as notas por classe
-exports.getNotasPorClasse = async (req, res) => {
+exports.getTodasNotasPorClasse = async (req, res) => {
   const { id_classe } = req.params;
 
-  try {
-    const [rows] = await db.query(
-      `SELECT n.id_aluno, n.nota
-       FROM notas n
-       INNER JOIN datas_nota dn ON n.id_data_nota = dn.id
-       WHERE dn.id_classe = ?`,
-      [id_classe]
-    );
+  if (!id_classe) {
+    return res.status(400).json({ erro: 'Parâmetro obrigatório: id_classe' });
+  }
 
-    res.json(rows);
-  } catch (erro) {
-    console.error('Erro ao buscar notas da classe:', erro);
-    res.status(500).json({ erro: 'Erro ao buscar notas da classe.' });
+  const sql = `
+    SELECT n.id_aluno, n.nota, n.id_data_nota 
+    FROM notas n
+    JOIN datas_nota dn ON n.id_data_nota = dn.id
+    WHERE dn.id_classe = ?
+  `;
+
+  try {
+    const [results] = await db.promise().query(sql, [id_classe]);
+    res.json(results);
+  } catch (err) {
+    console.error('Erro ao buscar todas as notas da classe:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 };
