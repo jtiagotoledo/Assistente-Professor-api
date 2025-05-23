@@ -100,3 +100,42 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
   );
 };
 
+exports.getPorcentagemFrequencia = (req, res) => {
+  const { id_aluno, id_classe } = req.query;
+
+  if (!id_aluno || !id_classe) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: id_aluno e id_classe' });
+  }
+
+  // Total de datas da classe
+  db.query(
+    'SELECT COUNT(*) AS total_datas FROM datas_frequencia WHERE id_classe = ?',
+    [id_classe],
+    (err, datas) => {
+      if (err) return res.status(500).json({ erro: err.message });
+
+      const totalDatas = datas[0].total_datas;
+
+      if (totalDatas === 0) {
+        return res.json({ porcentagem: 0 });
+      }
+
+      // Total de presenças do aluno
+      db.query(
+        'SELECT COUNT(*) AS presencas FROM frequencias WHERE id_aluno = ? AND id_classe = ? AND presente = 1',
+        [id_aluno, id_classe],
+        (err, pres) => {
+          if (err) return res.status(500).json({ erro: err.message });
+
+          const totalPresencas = pres[0].presencas;
+
+          const porcentagem = Math.round((totalPresencas / totalDatas) * 100);
+
+          res.json({ porcentagem });
+        }
+      );
+    }
+  );
+};
+
+
