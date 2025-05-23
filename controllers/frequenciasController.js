@@ -111,31 +111,36 @@ exports.getPorcentagemFrequencia = (req, res) => {
   db.query(
     'SELECT COUNT(*) AS total_datas FROM datas_frequencia WHERE id_classe = ?',
     [id_classe],
-    (err, datas) => {
+    (err, result1) => {
       if (err) return res.status(500).json({ erro: err.message });
 
-      const totalDatas = datas[0].total_datas;
+      const total_datas = result1[0].total_datas;
 
-      if (totalDatas === 0) {
+      if (total_datas === 0) {
         return res.json({ porcentagem: 0 });
       }
 
-      // Total de presenças do aluno
+      // Total de presenças do aluno nesta classe
       db.query(
-        'SELECT COUNT(*) AS presencas FROM frequencias WHERE id_aluno = ? AND id_classe = ? AND presente = 1',
+        `SELECT COUNT(*) AS total_presencas 
+         FROM frequencias 
+         WHERE id_aluno = ? 
+         AND id_data_frequencia IN (
+           SELECT id FROM datas_frequencia WHERE id_classe = ?
+         )`,
         [id_aluno, id_classe],
-        (err, pres) => {
+        (err, result2) => {
           if (err) return res.status(500).json({ erro: err.message });
 
-          const totalPresencas = pres[0].presencas;
+          const total_presencas = result2[0].total_presencas;
+          const porcentagem = ((total_presencas / total_datas) * 100).toFixed(2);
 
-          const porcentagem = Math.round((totalPresencas / totalDatas) * 100);
-
-          res.json({ porcentagem });
+          res.json({ porcentagem: Number(porcentagem) });
         }
       );
     }
   );
 };
+
 
 
