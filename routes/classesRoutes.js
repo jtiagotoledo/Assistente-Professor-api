@@ -3,7 +3,7 @@ const router = express.Router();
 const classesController = require('../controllers/classesController');
 
 // Buscar todas as notas por classe
-router.get('/classe/:id_classe/todas', controller.getNotasPorClasse);
+router.get('/classe/:id_classe/todas', classesController.getNotasPorClasse);
 
 // Buscar todas as classes de um período
 router.get('/:id_periodo', classesController.getByPeriodo);
