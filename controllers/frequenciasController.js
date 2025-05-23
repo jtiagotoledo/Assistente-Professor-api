@@ -103,6 +103,8 @@ exports.getFrequenciasPorClasseEData = (req, res) => {
 exports.getPorcentagemFrequencia = (req, res) => {
   const { id_aluno, id_classe } = req.query;
 
+  console.log('id_aluno:', id_aluno);
+console.log('id_classe:', id_classe);
   if (!id_aluno || !id_classe) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: id_aluno e id_classe' });
   }
@@ -115,6 +117,8 @@ exports.getPorcentagemFrequencia = (req, res) => {
       if (err) return res.status(500).json({ erro: err.message });
 
       const total_datas = result1[0].total_datas;
+      console.log('result totaldatas',total_datas);
+      
 
       if (total_datas === 0) {
         return res.json({ porcentagem: 0 });
@@ -134,7 +138,7 @@ exports.getPorcentagemFrequencia = (req, res) => {
 
           const total_presencas = result2[0].total_presencas;
           const porcentagem = ((total_presencas / total_datas) * 100).toFixed(2);
-
+        console.log('result porcentagem',porcentagem);
           res.json({ porcentagem: Number(porcentagem) });
         }
       );
