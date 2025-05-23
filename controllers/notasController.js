@@ -102,7 +102,7 @@ exports.getNotasPorClasseEData = (req, res) => {
   );
 };
 
-exports.getTodasNotasPorClasse = async (req, res) => {
+exports.getTodasNotasPorClasse = (req, res) => {
   const { id_classe } = req.params;
 
   if (!id_classe) {
@@ -116,11 +116,11 @@ exports.getTodasNotasPorClasse = async (req, res) => {
     WHERE dn.id_classe = ?
   `;
 
-  try {
-    const [results] = await db.promise().query(sql, [id_classe]);
+  db.query(sql, [id_classe], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar todas as notas da classe:', err);
+      return res.status(500).json({ erro: err.message });
+    }
     res.json(results);
-  } catch (err) {
-    console.error('Erro ao buscar todas as notas da classe:', err);
-    res.status(500).json({ erro: 'Erro interno do servidor' });
-  }
+  });
 };
