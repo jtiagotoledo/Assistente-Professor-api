@@ -146,5 +146,26 @@ console.log('id_classe:', id_classe);
   );
 };
 
+exports.getTodasFrequenciasPorClasse = (req, res) => {
+  const { id_classe } = req.params;
+
+  if (!id_classe) {
+    return res.status(400).json({ erro: 'Parâmetro obrigatório: id_classe' });
+  }
+
+  const sql = `
+    SELECT f.id_aluno, f.presente, f.id_data_frequencia 
+    FROM frequencias f
+    JOIN datas_frequencia df ON f.id_data_frequencia = df.id
+    WHERE df.id_classe = ?
+  `;
+
+  db.query(sql, [id_classe], (err, results) => {
+    if (err) return res.status(500).json({ erro: err.message });
+
+    res.json(results);
+  });
+};
+
 
 
