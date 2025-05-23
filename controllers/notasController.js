@@ -102,3 +102,22 @@ exports.getNotasPorClasseEData = (req, res) => {
   );
 };
 
+// Buscar todas as notas por classe
+exports.getNotasPorClasse = async (req, res) => {
+  const { id_classe } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT n.id_aluno, n.nota
+       FROM notas n
+       INNER JOIN datas_nota dn ON n.id_data_nota = dn.id
+       WHERE dn.id_classe = ?`,
+      [id_classe]
+    );
+
+    res.json(rows);
+  } catch (erro) {
+    console.error('Erro ao buscar notas da classe:', erro);
+    res.status(500).json({ erro: 'Erro ao buscar notas da classe.' });
+  }
+};
