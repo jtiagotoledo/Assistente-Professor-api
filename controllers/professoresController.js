@@ -62,3 +62,28 @@ exports.create = (req, res) => {
     }
   );
 };
+
+// Função para excluir um professor e todos os dados relacionados (CASCADE)
+exports.delete = (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ erro: 'ID do professor é obrigatório.' });
+  }
+
+  db.query(
+    'DELETE FROM professores WHERE id = ?',
+    [id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Professor não encontrado.' });
+      }
+
+      res.json({ mensagem: 'Professor e todos os dados relacionados foram excluídos com sucesso.' });
+    }
+  );
+};
