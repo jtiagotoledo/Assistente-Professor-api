@@ -7,6 +7,6 @@ router.get('/buscar-titulo', controller.getTituloByDataAndClasse);
 router.get('/buscar-id-titulo', controller.getIdTituloByDataAndClasse);
 router.get('/:id_classe', controller.getByClasse);
 router.put('/:id', controller.updateTitulo);
-router.delete('/:id', controller.delete);
+// router.delete('/:id', controller.delete);
 
 module.exports = router;

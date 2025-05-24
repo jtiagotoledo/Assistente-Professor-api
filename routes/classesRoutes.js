@@ -12,6 +12,6 @@ router.post('/', classesController.create);
 router.put('/:id', classesController.update);
 
 // deletar classe
-router.delete('/:id', classesController.delete);
+// router.delete('/:id', classesController.delete);
 
 module.exports = router;

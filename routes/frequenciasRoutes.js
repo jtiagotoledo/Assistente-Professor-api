@@ -8,6 +8,6 @@ router.get('/classe/:id_classe/data/:data', controller.getFrequenciasPorClasseED
 router.post('/', controller.create);
 router.get('/:id_data_frequencia', controller.getByDataFrequencia);
 router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// router.delete('/:id', controller.delete);
 
 module.exports = router;
