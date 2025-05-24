@@ -104,3 +104,28 @@ exports.getIdTituloByDataAndClasse = (req, res) => {
     }
   );
 };
+
+// Função para deletar uma data de nota pelo ID
+exports.delete = (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ erro: 'ID é obrigatório.' });
+  }
+
+  db.query(
+    'DELETE FROM datas_nota WHERE id = ?',
+    [id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Data de nota não encontrada.' });
+      }
+
+      res.json({ mensagem: 'Data de nota excluída com sucesso.' });
+    }
+  );
+};
