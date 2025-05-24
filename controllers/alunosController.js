@@ -47,7 +47,7 @@ exports.update = (req, res) => {
 };
 
 // Deletar aluno
-exports.remove = (req, res) => {
+exports.delete = (req, res) => {
   const { id } = req.params;
 
   db.query('DELETE FROM alunos WHERE id = ?', [id], (err) => {

@@ -11,4 +11,7 @@ router.post('/', classesController.create);
 // Atualizar uma classe
 router.put('/:id', classesController.update);
 
+// deletar classe
+router.delete('/:id', classesController.delete);
+
 module.exports = router;

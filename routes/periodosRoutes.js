@@ -11,4 +11,7 @@ router.post('/', periodosController.create);
 // atualizar período
 router.put('/:id', periodosController.update);
 
+// deletar período
+router.delete('/:id', periodosController.delete);
+
 module.exports = router;
