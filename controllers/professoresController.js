@@ -1,89 +1,80 @@
-const db = require('../config/db');
-const generateUUID = require('../utils/uuid'); 
+const pool = require('../config/db');
+const generateUUID = require('../utils/uuid');
 
-// Função para buscar um professor pelo UUID (uid do Firebase)
-exports.getByUUID = (req, res) => {
+// Buscar professor pelo UUID do Firebase
+exports.getByUUID = async (req, res) => {
   const { uuid } = req.params;
 
   if (!uuid) {
     return res.status(400).json({ erro: 'UUID é obrigatório.' });
   }
 
-  db.query(
-    'SELECT * FROM professores WHERE uuid = ?',
-    [uuid],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const [results] = await pool.query('SELECT * FROM professores WHERE uuid = ?', [uuid]);
 
-      if (results.length === 0) {
-        return res.status(404).json({ erro: 'Professor não encontrado.' });
-      }
-
-      res.json(results[0]);
+    if (results.length === 0) {
+      return res.status(404).json({ erro: 'Professor não encontrado.' });
     }
-  );
+
+    res.json(results[0]);
+  } catch (err) {
+    console.error('Erro ao buscar professor:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-// Função para obter todos os professores
-exports.getAll = (req, res) => {
-  db.query('SELECT * FROM professores', (err, results) => {
-    if (err) {
-      return res.status(500).json({ erro: err.message });
-    }
+// Obter todos os professores
+exports.getAll = async (req, res) => {
+  try {
+    const [results] = await pool.query('SELECT * FROM professores');
     res.json(results);
-  });
+  } catch (err) {
+    console.error('Erro ao buscar professores:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-// Função para criar um novo professor
-exports.create = (req, res) => {
+// Criar novo professor
+exports.create = async (req, res) => {
   const { nome, email, uuid, foto } = req.body;
-
-  console.log('nome email uuid foto', nome, email, uuid, foto)
 
   if (!nome || !email || !uuid) {
     return res.status(400).json({ erro: 'Nome, email e uuid são obrigatórios.' });
   }
 
-  const id = generateUUID(); 
-  console.log('id gerado: ', id);
+  const id = generateUUID();
 
-  db.query(
-    'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
-    [id, uuid, nome, email, foto],
-    (err) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    await pool.query(
+      'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
+      [id, uuid, nome, email, foto]
+    );
 
-      // Resposta de sucesso
-      res.status(201).json({ id, uuid, nome, email, foto });
-    }
-  );
+    res.status(201).json({ id, uuid, nome, email, foto });
+  } catch (err) {
+    console.error('Erro ao criar professor:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-// Função para excluir um professor e todos os dados relacionados (CASCADE)
-exports.delete = (req, res) => {
+// Excluir professor pelo ID
+exports.delete = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ erro: 'ID do professor é obrigatório.' });
   }
 
-  db.query(
-    'DELETE FROM professores WHERE id = ?',
-    [id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const [result] = await pool.query('DELETE FROM professores WHERE id = ?', [id]);
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ erro: 'Professor não encontrado.' });
-      }
-
-      res.json({ mensagem: 'Professor e todos os dados relacionados foram excluídos com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Professor não encontrado.' });
     }
-  );
+
+    res.json({ mensagem: 'Professor e todos os dados relacionados foram excluídos com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao deletar professor:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };

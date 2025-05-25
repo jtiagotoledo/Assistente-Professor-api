@@ -1,44 +1,46 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
 
 // Criar nota
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const { id_data_nota, id_aluno, nota } = req.body;
-  console.log('req.body criar nota', req.body);
 
-
-  if (!id_data_nota || !id_aluno || nota === undefined) {
-    return res.status(400).json({ erro: 'Campos obrigatórios: id_data_nota, id_aluno, valor' });
+  if (!id_data_nota || !id_aluno || nota === undefined || isNaN(nota)) {
+    return res.status(400).json({ erro: 'Campos obrigatórios: id_data_nota, id_aluno e nota válida' });
   }
 
   const id = generateUUID();
 
-  db.query(
-    'INSERT INTO notas (id, id_data_nota, id_aluno, nota) VALUES (?, ?, ?, ?)',
-    [id, id_data_nota, id_aluno, nota],
-    (err) => {
-      if (err) return res.status(500).json({ erro: err.message });
-      res.status(201).json({ id, id_data_nota, id_aluno, nota });
-    }
-  );
+  try {
+    await pool.query(
+      'INSERT INTO notas (id, id_data_nota, id_aluno, nota) VALUES (?, ?, ?, ?)',
+      [id, id_data_nota, id_aluno, nota]
+    );
+    res.status(201).json({ id, id_data_nota, id_aluno, nota });
+  } catch (err) {
+    console.error('Erro ao criar nota:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Buscar notas por data
-exports.getByDataNota = (req, res) => {
+exports.getByDataNota = async (req, res) => {
   const { id_data_nota } = req.params;
 
-  db.query(
-    'SELECT * FROM notas WHERE id_data_nota = ?',
-    [id_data_nota],
-    (err, results) => {
-      if (err) return res.status(500).json({ erro: err.message });
-      res.json(results);
-    }
-  );
+  try {
+    const [results] = await pool.query(
+      'SELECT * FROM notas WHERE id_data_nota = ?',
+      [id_data_nota]
+    );
+    res.json(results);
+  } catch (err) {
+    console.error('Erro ao buscar notas por data:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Atualizar nota
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const { id } = req.params;
   const { nota } = req.body;
 
@@ -46,63 +48,57 @@ exports.update = (req, res) => {
     return res.status(400).json({ erro: 'Nota inválida' });
   }
 
-  db.query(
-    'UPDATE notas SET nota = ? WHERE id = ?',
-    [nota, id],
-    (err) => {
-      if (err) return res.status(500).json({ erro: err.message });
-      res.json({ mensagem: 'Nota atualizada com sucesso' });
+  try {
+    const [result] = await pool.query(
+      'UPDATE notas SET nota = ? WHERE id = ?',
+      [nota, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Nota não encontrada' });
     }
-  );
+
+    res.json({ mensagem: 'Nota atualizada com sucesso' });
+  } catch (err) {
+    console.error('Erro ao atualizar nota:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Buscar notas por classe e data
-exports.getNotasPorClasseEData = (req, res) => {
+exports.getNotasPorClasseEData = async (req, res) => {
   const { id_classe, data } = req.params;
 
-  console.log('Classe:', id_classe);
-  console.log('Data:', data);
+  try {
+    const [resultados] = await pool.query(
+      'SELECT dn.id as id_data_nota FROM datas_nota dn WHERE dn.id_classe = ? AND dn.data = ?',
+      [id_classe, data]
+    );
 
-  db.query(
-    'SELECT dn.id as id_data_nota FROM datas_nota dn WHERE dn.id_classe = ? AND dn.data = ?',
-    [id_classe, data],
-    (err, resultados) => {
-      if (err) {
-        console.error('Erro ao buscar data_nota:', err);
-        return res.status(500).json({ erro: err.message });
-      }
-
-      console.log('Resultado da busca em datas_nota:', resultados);
-
-      if (resultados.length === 0) {
-        return res.status(404).json({ erro: 'Data de nota não encontrada para essa classe' });
-      }
-
-      const id_data_nota = resultados[0].id_data_nota;
-      console.log('ID da data_nota:', id_data_nota);
-
-      db.query(
-        `SELECT n.id, n.nota, a.id as id_aluno, a.nome, a.numero 
-         FROM notas n
-         JOIN alunos a ON n.id_aluno = a.id
-         WHERE n.id_data_nota = ?
-         ORDER BY a.numero ASC`,
-        [id_data_nota],
-        (err, notas) => {
-          if (err) {
-            console.error('Erro ao buscar notas:', err);
-            return res.status(500).json({ erro: err.message });
-          }
-
-          console.log('Resultado da busca em notas:', notas);
-          res.json(notas);
-        }
-      );
+    if (resultados.length === 0) {
+      return res.status(404).json({ erro: 'Data de nota não encontrada para essa classe' });
     }
-  );
+
+    const id_data_nota = resultados[0].id_data_nota;
+
+    const [notas] = await pool.query(
+      `SELECT n.id, n.nota, a.id as id_aluno, a.nome, a.numero 
+       FROM notas n
+       JOIN alunos a ON n.id_aluno = a.id
+       WHERE n.id_data_nota = ?
+       ORDER BY a.numero ASC`,
+      [id_data_nota]
+    );
+
+    res.json(notas);
+  } catch (err) {
+    console.error('Erro ao buscar notas por classe e data:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-exports.getTodasNotasPorClasse = (req, res) => {
+// Buscar todas as notas por classe
+exports.getTodasNotasPorClasse = async (req, res) => {
   const { id_classe } = req.params;
 
   if (!id_classe) {
@@ -116,11 +112,11 @@ exports.getTodasNotasPorClasse = (req, res) => {
     WHERE dn.id_classe = ?
   `;
 
-  db.query(sql, [id_classe], (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar todas as notas da classe:', err);
-      return res.status(500).json({ erro: err.message });
-    }
+  try {
+    const [results] = await pool.query(sql, [id_classe]);
     res.json(results);
-  });
+  } catch (err) {
+    console.error('Erro ao buscar todas as notas da classe:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };

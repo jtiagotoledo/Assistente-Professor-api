@@ -1,8 +1,8 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
 
 // Criar aluno
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const { numero, nome, inativo = false, media_notas, porc_frequencia, id_classe } = req.body;
 
   if (!numero || !nome || !id_classe) {
@@ -11,62 +11,80 @@ exports.create = (req, res) => {
 
   const id = generateUUID();
 
-  db.query(
-    'INSERT INTO alunos (id, numero, nome, inativo, media_notas, porc_frequencia, id_classe) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [id, numero, nome, inativo, media_notas, porc_frequencia, id_classe],
-    (err) => {
-      if (err) return res.status(500).json({ erro: err.message });
-      res.status(201).json({ id, numero, nome, inativo, media_notas, porc_frequencia, id_classe });
-    }
-  );
+  try {
+    await pool.query(
+      'INSERT INTO alunos (id, numero, nome, inativo, media_notas, porc_frequencia, id_classe) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [id, numero, nome, inativo, media_notas, porc_frequencia, id_classe]
+    );
+
+    res.status(201).json({ id, numero, nome, inativo, media_notas, porc_frequencia, id_classe });
+  } catch (err) {
+    console.error('Erro ao criar aluno:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Buscar alunos por classe
-exports.getByClasse = (req, res) => {
+exports.getByClasse = async (req, res) => {
   const { id_classe } = req.params;
 
-  db.query('SELECT * FROM alunos WHERE id_classe = ? ORDER BY numero ASC', [id_classe], (err, results) => {
-    if (err) return res.status(500).json({ erro: err.message });
+  try {
+    const [results] = await pool.query(
+      'SELECT * FROM alunos WHERE id_classe = ? ORDER BY numero ASC',
+      [id_classe]
+    );
+
     res.json(results);
-  });
+  } catch (err) {
+    console.error('Erro ao buscar alunos:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Atualizar aluno
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const { id } = req.params;
   const { numero, nome, inativo, media_notas, porc_frequencia, id_classe } = req.body;
 
-  db.query(
-    `UPDATE alunos SET numero = ?, nome = ?, inativo = ?, media_notas = ?, porc_frequencia = ?, id_classe = ? WHERE id = ?`,
-    [numero, nome, inativo, media_notas, porc_frequencia, id_classe, id],
-    (err) => {
-      if (err) return res.status(500).json({ erro: err.message });
-      res.json({ mensagem: 'Aluno atualizado com sucesso' });
+  if (!numero || !nome || !id_classe) {
+    return res.status(400).json({ erro: 'Campos obrigatórios: numero, nome e id_classe' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE alunos SET numero = ?, nome = ?, inativo = ?, media_notas = ?, porc_frequencia = ?, id_classe = ? WHERE id = ?`,
+      [numero, nome, inativo, media_notas, porc_frequencia, id_classe, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Aluno não encontrado.' });
     }
-  );
+
+    res.json({ mensagem: 'Aluno atualizado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao atualizar aluno:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-// Função para deletar um aluno pelo ID
-exports.delete = (req, res) => {
+// Deletar aluno pelo ID
+exports.delete = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ erro: 'ID é obrigatório.' });
   }
 
-  db.query(
-    'DELETE FROM alunos WHERE id = ?',
-    [id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const [result] = await pool.query('DELETE FROM alunos WHERE id = ?', [id]);
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ erro: 'Aluno não encontrado.' });
-      }
-
-      res.json({ mensagem: 'Aluno excluído com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Aluno não encontrado.' });
     }
-  );
+
+    res.json({ mensagem: 'Aluno excluído com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao excluir aluno:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };

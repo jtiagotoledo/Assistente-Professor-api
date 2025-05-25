@@ -1,10 +1,9 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
 
-// Registrar um novo acesso (id e email do professor vêm na requisição)
-exports.registrarAcesso = (req, res) => {
-    console.log("reg acesso", req.body);
-    
+exports.registrarAcesso = async (req, res) => {
+  console.log("reg acesso", req.body);
+
   const { id_professor, email_professor } = req.body;
 
   if (!id_professor || !email_professor) {
@@ -13,15 +12,16 @@ exports.registrarAcesso = (req, res) => {
 
   const id = generateUUID();
 
-  db.query(
-    'INSERT INTO acessos (id, id_professor, email_professor) VALUES (?, ?, ?)',
-    [id, id_professor, email_professor],
-    (err) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    await pool.query(
+      'INSERT INTO acessos (id, id_professor, email_professor) VALUES (?, ?, ?)',
+      [id, id_professor, email_professor]
+    );
 
-      res.status(201).json({ mensagem: 'Acesso registrado com sucesso.' });
-    }
-  );
+    res.status(201).json({ mensagem: 'Acesso registrado com sucesso.' });
+
+  } catch (err) {
+    console.error('Erro ao registrar acesso:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };

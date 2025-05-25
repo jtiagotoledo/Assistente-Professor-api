@@ -1,24 +1,25 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
 
 // Buscar classes por id_periodo
-exports.getByPeriodo = (req, res) => {
+exports.getByPeriodo = async (req, res) => {
   const { id_periodo } = req.params;
 
-  db.query(
-    'SELECT * FROM classes WHERE id_periodo = ? ORDER BY nome ASC',
-    [id_periodo],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
-      res.json(results);
-    }
-  );
+  try {
+    const [results] = await pool.query(
+      'SELECT * FROM classes WHERE id_periodo = ? ORDER BY nome ASC',
+      [id_periodo]
+    );
+
+    res.json(results);
+  } catch (err) {
+    console.error('Erro ao buscar classes:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Criar nova classe
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const { nome, id_periodo } = req.body;
 
   if (!nome || !id_periodo) {
@@ -27,68 +28,66 @@ exports.create = (req, res) => {
 
   const id = generateUUID();
 
-  db.query(
-    'INSERT INTO classes (id, nome, id_periodo) VALUES (?, ?, ?)',
-    [id, nome, id_periodo],
-    (err) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    await pool.query(
+      'INSERT INTO classes (id, nome, id_periodo) VALUES (?, ?, ?)',
+      [id, nome, id_periodo]
+    );
 
-      res.status(201).json({ id, nome, id_periodo });
-    }
-  );
+    res.status(201).json({ id, nome, id_periodo });
+  } catch (err) {
+    console.error('Erro ao criar classe:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
 // Atualizar uma classe
-exports.update = (req, res) => {
-  const { id } = req.params; 
-  const { nome, id_periodo } = req.body; 
+exports.update = async (req, res) => {
+  const { id } = req.params;
+  const { nome, id_periodo } = req.body;
 
   if (!nome || !id_periodo) {
     return res.status(400).json({ erro: 'Nome e id_periodo são obrigatórios.' });
   }
 
-  db.query(
-    'UPDATE classes SET nome = ?, id_periodo = ? WHERE id = ?',
-    [nome, id_periodo, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const [result] = await pool.query(
+      'UPDATE classes SET nome = ?, id_periodo = ? WHERE id = ?',
+      [nome, id_periodo, id]
+    );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ erro: 'Classe não encontrada.' });
-      }
-
-      res.status(200).json({ mensagem: 'Classe atualizada com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Classe não encontrada.' });
     }
-  );
+
+    res.status(200).json({ mensagem: 'Classe atualizada com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao atualizar classe:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
 
-// Função para deletar uma classe pelo ID
-exports.delete = (req, res) => {
+// Deletar uma classe pelo ID
+exports.delete = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ erro: 'ID é obrigatório.' });
   }
 
-  db.query(
-    'DELETE FROM classes WHERE id = ?',
-    [id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM classes WHERE id = ?',
+      [id]
+    );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ erro: 'Classe não encontrada.' });
-      }
-
-      res.json({ mensagem: 'Classe excluída com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Classe não encontrada.' });
     }
-  );
+
+    res.json({ mensagem: 'Classe excluída com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao excluir classe:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
 };
-
-
