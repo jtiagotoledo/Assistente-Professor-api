@@ -46,12 +46,27 @@ exports.update = (req, res) => {
   );
 };
 
-// Deletar aluno
+// Função para deletar um aluno pelo ID
 exports.delete = (req, res) => {
   const { id } = req.params;
 
-  db.query('DELETE FROM alunos WHERE id = ?', [id], (err) => {
-    if (err) return res.status(500).json({ erro: err.message });
-    res.json({ mensagem: 'Aluno deletado com sucesso' });
-  });
+  if (!id) {
+    return res.status(400).json({ erro: 'ID é obrigatório.' });
+  }
+
+  db.query(
+    'DELETE FROM alunos WHERE id = ?',
+    [id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ erro: 'Aluno não encontrado.' });
+      }
+
+      res.json({ mensagem: 'Aluno excluído com sucesso.' });
+    }
+  );
 };
