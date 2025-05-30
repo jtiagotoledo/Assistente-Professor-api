@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authmiddleware');
 const controller = require('../controllers/professoresController');
 
 // Rota para pegar os dados do professor autenticado
