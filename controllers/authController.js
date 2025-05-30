@@ -35,15 +35,15 @@ exports.login = async (req, res) => {
 };
 
 exports.refreshToken = (req, res) => {
-  const { token } = req.body;
+  const { refreshToken } = req.body;  // alterar aqui
 
-  if (!token) {
+  if (!refreshToken) {
     return res.status(401).json({ erro: 'Token de atualização é obrigatório.' });
   }
 
   const jwt = require('jsonwebtoken');
 
-  jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, professor) => {
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, professor) => {  // usar refreshToken aqui também
     if (err) {
       return res.status(403).json({ erro: 'Token inválido ou expirado.' });
     }
