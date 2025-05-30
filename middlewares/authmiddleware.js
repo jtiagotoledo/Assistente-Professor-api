@@ -10,8 +10,6 @@ const authMiddleware = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    console.log('token',token);
-    
     const decoded = verifyAccessToken(token);
     req.user = decoded;  // Aqui você pode ter: { id, email, ... }
     next();
