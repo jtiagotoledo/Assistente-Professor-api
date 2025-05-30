@@ -4,7 +4,6 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const app = express();
-const db = require('./config/db');
 
 require('./init-db');
 
@@ -12,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
+app.use('/auth', require('./routes/auth'));
 app.use('/professores', require('./routes/professoresRoutes'));
 app.use('/professores/acesso', require('./routes/acessosRoutes'));
 app.use('/periodos', require('./routes/periodosRoutes'));

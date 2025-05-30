@@ -1,16 +1,17 @@
 const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
+const bcrypt = require('bcrypt');
 
-// Buscar professor pelo UUID do Firebase
-exports.getByUUID = async (req, res) => {
-  const { uuid } = req.params;
+// Buscar professor pelo ID
+exports.getById = async (req, res) => {
+  const { id } = req.params;
 
-  if (!uuid) {
-    return res.status(400).json({ erro: 'UUID é obrigatório.' });
+  if (!id) {
+    return res.status(400).json({ erro: 'ID é obrigatório.' });
   }
 
   try {
-    const [results] = await pool.query('SELECT * FROM professores WHERE uuid = ?', [uuid]);
+    const [results] = await pool.query('SELECT id, nome, email, foto, criado_em FROM professores WHERE id = ?', [id]);
 
     if (results.length === 0) {
       return res.status(404).json({ erro: 'Professor não encontrado.' });
@@ -26,7 +27,7 @@ exports.getByUUID = async (req, res) => {
 // Obter todos os professores
 exports.getAll = async (req, res) => {
   try {
-    const [results] = await pool.query('SELECT * FROM professores');
+    const [results] = await pool.query('SELECT id, nome, email, foto, criado_em FROM professores');
     res.json(results);
   } catch (err) {
     console.error('Erro ao buscar professores:', err);
@@ -36,21 +37,24 @@ exports.getAll = async (req, res) => {
 
 // Criar novo professor
 exports.create = async (req, res) => {
-  const { nome, email, uuid, foto } = req.body;
+  const { nome, email, senha, foto } = req.body;
 
-  if (!nome || !email || !uuid) {
-    return res.status(400).json({ erro: 'Nome, email e uuid são obrigatórios.' });
+  if (!nome || !email || !senha) {
+    return res.status(400).json({ erro: 'Nome, email e senha são obrigatórios.' });
   }
 
   const id = generateUUID();
 
   try {
+    // Hash da senha
+    const senhaHash = await bcrypt.hash(senha, 10);
+
     await pool.query(
-      'INSERT INTO professores (id, uuid, nome, email, foto) VALUES (?, ?, ?, ?, ?)',
-      [id, uuid, nome, email, foto]
+      'INSERT INTO professores (id, nome, email, senha, foto) VALUES (?, ?, ?, ?, ?)',
+      [id, nome, email, senhaHash, foto || '']
     );
 
-    res.status(201).json({ id, uuid, nome, email, foto });
+    res.status(201).json({ id, nome, email, foto });
   } catch (err) {
     console.error('Erro ao criar professor:', err);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
