@@ -58,6 +58,8 @@ exports.refreshToken = (req, res) => {
 
 exports.googleLogin = async (req, res) => {
   const { idToken } = req.body;
+  console.log('idToken',idToken);
+  
 
   if (!idToken) {
     return res.status(400).json({ erro: 'ID Token é obrigatório.' });
