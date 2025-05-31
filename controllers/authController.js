@@ -1,6 +1,8 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.login = async (req, res) => {
   const { email, senha } = req.body;
@@ -51,4 +53,43 @@ exports.refreshToken = (req, res) => {
     const newAccessToken = generateAccessToken(professor);
     res.json({ accessToken: newAccessToken });
   });
+};
+
+exports.googleLogin = async (req, res) => {
+  const { id_token } = req.body;
+
+  if (!id_token) {
+    return res.status(400).json({ erro: 'ID Token é obrigatório.' });
+  }
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+    const nome = payload.name;
+
+    // Verifica ou cria professor no banco
+    const [results] = await pool.query('SELECT * FROM professores WHERE email = ?', [email]);
+
+    let professor;
+
+    if (results.length === 0) {
+      const [result] = await pool.query('INSERT INTO professores (email, nome) VALUES (?, ?)', [email, nome]);
+      professor = { id: result.insertId, email };
+    } else {
+      professor = results[0];
+    }
+
+    const accessToken = generateAccessToken(professor);
+    const refreshToken = generateRefreshToken(professor);
+
+    res.json({ accessToken, refreshToken });
+  } catch (err) {
+    console.error('Erro na autenticação Google:', err);
+    res.status(401).json({ erro: 'Token Google inválido.' });
+  }
 };

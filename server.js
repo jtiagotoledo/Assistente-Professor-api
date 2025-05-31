@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-app.use('/auth', require('./routes/auth'));
+app.use('/auth', require('./routes/authRoutes'));
 app.use('/professores', require('./routes/professoresRoutes'));
 app.use('/professores/acesso', require('./routes/acessosRoutes'));
 app.use('/periodos', require('./routes/periodosRoutes'));
