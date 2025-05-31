@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -37,7 +38,7 @@ exports.login = async (req, res) => {
 };
 
 exports.refreshToken = (req, res) => {
-  const { refreshToken } = req.body;  // alterar aqui
+  const { refreshToken } = req.body;  
 
   if (!refreshToken) {
     return res.status(401).json({ erro: 'Token de atualização é obrigatório.' });
@@ -56,38 +57,47 @@ exports.refreshToken = (req, res) => {
 };
 
 exports.googleLogin = async (req, res) => {
-  const { id_token } = req.body;
+  const { idToken } = req.body;
 
-  if (!id_token) {
+  if (!idToken) {
     return res.status(400).json({ erro: 'ID Token é obrigatório.' });
   }
 
   try {
     const ticket = await client.verifyIdToken({
-      idToken: id_token,
+      idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
     const email = payload.email;
     const nome = payload.name;
+    const foto = payload.picture;
 
-    // Verifica ou cria professor no banco
+    // Verifica se professor já existe
     const [results] = await pool.query('SELECT * FROM professores WHERE email = ?', [email]);
 
     let professor;
 
     if (results.length === 0) {
-      const [result] = await pool.query('INSERT INTO professores (email, nome) VALUES (?, ?)', [email, nome]);
-      professor = { id: result.insertId, email };
+      const id = uuidv4();
+      const senha = 'GOOGLE_AUTH';
+
+      await pool.query(
+        'INSERT INTO professores (id, email, nome, senha, foto) VALUES (?, ?, ?, ?, ?)',
+        [id, email, nome, senha, foto]
+      );
+
+      professor = { id, email, nome, foto };
     } else {
       professor = results[0];
     }
 
-    const accessToken = generateAccessToken(professor);
-    const refreshToken = generateRefreshToken(professor);
+    // Geração dos tokens
+    const accessToken = generateAccessToken({ id: professor.id, email: professor.email });
+    const refreshToken = generateRefreshToken({ id: professor.id, email: professor.email });
 
-    res.json({ accessToken, refreshToken });
+    res.json({ accessToken, refreshToken, professor });
   } catch (err) {
     console.error('Erro na autenticação Google:', err);
     res.status(401).json({ erro: 'Token Google inválido.' });
