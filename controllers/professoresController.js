@@ -43,7 +43,7 @@ exports.create = async (req, res) => {
     return res.status(400).json({ erro: 'Nome, email e senha são obrigatórios.' });
   }
 
-  const id = uuidv4();
+  const id = generateUUID()
 
   try {
     // Confere se já existe
