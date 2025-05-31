@@ -46,15 +46,35 @@ exports.create = async (req, res) => {
   const id = generateUUID();
 
   try {
+    // Verifica se o email já está em uso
+    const [existente] = await pool.query('SELECT * FROM professores WHERE email = ?', [email]);
+    if (existente.length > 0) {
+      return res.status(409).json({ erro: 'Email já em uso.' });
+    }
+
     // Hash da senha
     const senhaHash = await bcrypt.hash(senha, 10);
 
+    // Insere no banco
     await pool.query(
       'INSERT INTO professores (id, nome, email, senha, foto) VALUES (?, ?, ?, ?, ?)',
       [id, nome, email, senhaHash, foto || '']
     );
 
-    res.status(201).json({ id, nome, email, foto });
+    // Monta o objeto do professor
+    const novoProfessor = { id, nome, email, foto: foto || '' };
+
+    // Gera tokens
+    const accessToken = generateAccessToken(novoProfessor);
+    const refreshToken = generateRefreshToken(novoProfessor);
+
+    // Retorna dados + tokens
+    res.status(201).json({
+      ...novoProfessor,
+      accessToken,
+      refreshToken
+    });
+
   } catch (err) {
     console.error('Erro ao criar professor:', err);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
