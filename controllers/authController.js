@@ -1,9 +1,10 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.login = async (req, res) => {
   const { email, senha } = req.body;
@@ -37,23 +38,30 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.refreshToken = (req, res) => {
-  const { refreshToken } = req.body;  
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return res.status(401).json({ erro: 'Token de atualização é obrigatório.' });
+    return res.status(401).json({ erro: 'Refresh token não fornecido' });
   }
 
-  const jwt = require('jsonwebtoken');
+  try {
+    // Verifica validade do refresh token
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, professor) => {  // usar refreshToken aqui também
-    if (err) {
-      return res.status(403).json({ erro: 'Token inválido ou expirado.' });
-    }
+    const professor = {
+      id: decoded.id,
+      nome: decoded.nome,
+      email: decoded.email
+    };
 
-    const newAccessToken = generateAccessToken(professor);
-    res.json({ accessToken: newAccessToken });
-  });
+    const accessToken = generateAccessToken(professor);
+
+    res.json({ accessToken });
+  } catch (err) {
+    console.error('Erro ao renovar token:', err);
+    res.status(403).json({ erro: 'Refresh token inválido ou expirado' });
+  }
 };
 
 exports.googleLogin = async (req, res) => {
