@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
+const authMiddleware = require('../middlewares/authmiddleware');
 const acessosController = require('../controllers/acessosController');
 
-// Rota para registrar um acesso
-router.post('/', acessosController.registrarAcesso);
+router.post('/', authMiddleware, acessosController.registrarAcesso);
 
 module.exports = router;

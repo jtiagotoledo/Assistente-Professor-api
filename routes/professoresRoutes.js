@@ -11,9 +11,9 @@ router.get('/me', authMiddleware, (req, res) => {
 });
 
 // Rotas protegidas (exigem token)
-router.get('/', controller.getAll);
-router.post('/', controller.create);
-router.get('/id/:id', controller.getById);
-router.delete('/:id', controller.delete);
+router.get('/', authMiddleware, controller.getAll);
+router.post('/', authMiddleware, controller.create);
+router.get('/id/:id', authMiddleware, controller.getById);
+router.delete('/:id', authMiddleware, controller.delete);
 
 module.exports = router;

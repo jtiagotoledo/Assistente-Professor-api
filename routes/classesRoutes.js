@@ -1,17 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const classesController = require('../controllers/classesController');
+const authMiddleware = require('../middlewares/authmiddleware');
 
-// Buscar todas as classes de um período
-router.get('/:id_periodo', classesController.getByPeriodo);
-
-// Criar nova classe
-router.post('/', classesController.create);
-
-// Atualizar uma classe
-router.put('/:id', classesController.update);
-
-// deletar classe
-router.delete('/:id', classesController.delete);
+router.get('/:id_periodo', authMiddleware, classesController.getByPeriodo);
+router.post('/', authMiddleware, classesController.create);
+router.put('/:id', authMiddleware, classesController.update);
+router.delete('/:id', authMiddleware, classesController.delete);
 
 module.exports = router;
