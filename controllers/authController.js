@@ -1,8 +1,8 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const { v4: uuidv4 } = require('uuid');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
 
