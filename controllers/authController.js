@@ -23,15 +23,27 @@ exports.login = async (req, res) => {
     const professor = results[0];
 
     const senhaValida = await bcrypt.compare(senha, professor.senha);
-
     if (!senhaValida) {
       return res.status(401).json({ erro: 'Credenciais inválidas.' });
     }
 
-    const accessToken = generateAccessToken(professor);
-    const refreshToken = generateRefreshToken(professor);
+    // Apenas dados necessários no token
+    const userPayload = {
+      id: professor.id,
+      nome: professor.nome,
+      email: professor.email,
+    };
 
-    res.json({ accessToken, refreshToken });
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    res.json({
+      accessToken,
+      refreshToken,
+      id: professor.id,
+      nome: professor.nome,
+      email: professor.email
+    });
   } catch (err) {
     console.error('Erro no login:', err);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
@@ -46,16 +58,15 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    // Verifica validade do refresh token
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    const professor = {
+    const userPayload = {
       id: decoded.id,
       nome: decoded.nome,
-      email: decoded.email
+      email: decoded.email,
     };
 
-    const accessToken = generateAccessToken(professor);
+    const accessToken = generateAccessToken(userPayload);
 
     res.json({ accessToken });
   } catch (err) {
@@ -82,14 +93,13 @@ exports.googleLogin = async (req, res) => {
     const nome = payload.name;
     const foto = payload.picture;
 
-    // Verifica se professor já existe
     const [results] = await pool.query('SELECT * FROM professores WHERE email = ?', [email]);
 
     let professor;
 
     if (results.length === 0) {
       const id = uuidv4();
-      const senha = 'GOOGLE_AUTH';
+      const senha = 'GOOGLE_AUTH'; // Senha dummy
 
       await pool.query(
         'INSERT INTO professores (id, email, nome, senha, foto) VALUES (?, ?, ?, ?, ?)',
@@ -101,11 +111,16 @@ exports.googleLogin = async (req, res) => {
       professor = results[0];
     }
 
-    // Geração dos tokens
-    const accessToken = generateAccessToken({ id: professor.id, email: professor.email });
-    const refreshToken = generateRefreshToken({ id: professor.id, email: professor.email });
+    const userPayload = {
+      id: professor.id,
+      nome: professor.nome,
+      email: professor.email,
+    };
 
-    res.json({ accessToken, refreshToken, professor });
+    const accessToken = generateAccessToken(userPayload);
+    const refreshToken = generateRefreshToken(userPayload);
+
+    res.json({ accessToken, refreshToken, professor: userPayload });
   } catch (err) {
     console.error('Erro na autenticação Google:', err);
     res.status(401).json({ erro: 'Token Google inválido.' });
