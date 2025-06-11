@@ -3,11 +3,20 @@ const generateUUID = require('../utils/uuid');
 
 // Criar aluno
 exports.create = async (req, res) => {
-  const { numero, nome, inativo = false, media_notas, porc_frequencia, id_classe } = req.body;
+  const { numero, nome, inativo = false, id_classe } = req.body;
 
   if (!numero || !nome || !id_classe) {
     return res.status(400).json({ erro: 'Campos obrigatórios: numero, nome e id_classe' });
   }
+
+  // Converte os campos opcionais para null caso estejam vazios ou não enviados
+  const media_notas = req.body.media_notas === undefined || req.body.media_notas === ''
+    ? null
+    : parseFloat(req.body.media_notas);
+
+  const porc_frequencia = req.body.porc_frequencia === undefined || req.body.porc_frequencia === ''
+    ? null
+    : parseFloat(req.body.porc_frequencia);
 
   const id = generateUUID();
 
