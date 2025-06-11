@@ -10,7 +10,11 @@ exports.create = async (req, res) => {
   }
 
   const id = generateUUID();
-  const foto_url = req.file ? req.file.path : null; // 📷 pega o caminho da imagem
+
+  // Se houver uma foto enviada, cria a URL pública
+  const foto_url = req.file
+    ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+    : null;
 
   try {
     await pool.query(
@@ -24,6 +28,7 @@ exports.create = async (req, res) => {
     res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 };
+
 
 
 // Buscar alunos por classe

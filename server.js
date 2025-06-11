@@ -4,6 +4,7 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const app = express();
+const path = require('path');
 
 require('./init-db');
 
@@ -21,6 +22,7 @@ app.use('/datas-frequencia', require('./routes/datasFrequenciaRoutes'));
 app.use('/datas-notas', require('./routes/datasNotasRoutes'));
 app.use('/frequencias', require('./routes/frequenciasRoutes'));
 app.use('/notas', require('./routes/notasRoutes'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.get('/', (req, res) => {
