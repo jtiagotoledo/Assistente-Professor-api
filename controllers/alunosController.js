@@ -10,19 +10,21 @@ exports.create = async (req, res) => {
   }
 
   const id = generateUUID();
+  const foto_url = req.file ? req.file.path : null; // 📷 pega o caminho da imagem
 
   try {
     await pool.query(
-      'INSERT INTO alunos (id, numero, nome, inativo, media_notas, porc_frequencia, id_classe) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [id, numero, nome, inativo, media_notas, porc_frequencia, id_classe]
+      'INSERT INTO alunos (id, numero, nome, inativo, media_notas, porc_frequencia, id_classe, foto_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, numero, nome, inativo, media_notas, porc_frequencia, id_classe, foto_url]
     );
 
-    res.status(201).json({ id, numero, nome, inativo, media_notas, porc_frequencia, id_classe });
+    res.status(201).json({ id, numero, nome, inativo, media_notas, porc_frequencia, id_classe, foto_url });
   } catch (err) {
     console.error('Erro ao criar aluno:', err);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 };
+
 
 // Buscar alunos por classe
 exports.getByClasse = async (req, res) => {

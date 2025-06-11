@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/alunosController');
 const authMiddleware = require('../middlewares/authmiddleware');
+const upload = require('../utils/upload');
 
-router.post('/', authMiddleware, controller.create);                      // Criar aluno
-router.get('/:id_classe', authMiddleware, controller.getByClasse);        // Buscar alunos por classe
-router.put('/:id', authMiddleware, controller.update);                    // Atualizar aluno
-router.delete('/:id', authMiddleware, controller.delete);                // Deletar aluno
+router.post('/', authMiddleware, upload.single('foto'), controller.create);
+router.get('/:id_classe', authMiddleware, controller.getByClasse);        
+router.put('/:id', authMiddleware, controller.update);                   
+router.delete('/:id', authMiddleware, controller.delete);                
 
 module.exports = router;
