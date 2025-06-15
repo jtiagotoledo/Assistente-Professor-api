@@ -1,5 +1,7 @@
 const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
+const fs = require('fs');
+const path = require('path');
 
 // Criar aluno
 exports.create = async (req, res) => {
@@ -92,10 +94,30 @@ exports.delete = async (req, res) => {
   }
 
   try {
+    // 1. Buscar foto_url antes de deletar o aluno
+    const [rows] = await pool.query('SELECT foto_url FROM alunos WHERE id = ?', [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: 'Aluno não encontrado.' });
+    }
+
+    const foto_url = rows[0].foto_url;
+
+    // 2. Deletar o aluno
     const [result] = await pool.query('DELETE FROM alunos WHERE id = ?', [id]);
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ erro: 'Aluno não encontrado.' });
+    // 3. Excluir foto do disco, se existir
+    if (foto_url) {
+      const nomeArquivo = foto_url.split('/').pop(); // ex: 'resized-123.jpg'
+      const caminhoFoto = path.join(__dirname, '..', 'uploads', nomeArquivo);
+
+      fs.unlink(caminhoFoto, (err) => {
+        if (err) {
+          console.warn('⚠️ Erro ao excluir foto:', err.message);
+        } else {
+          console.log('🗑️ Foto excluída com sucesso:', nomeArquivo);
+        }
+      });
     }
 
     res.json({ mensagem: 'Aluno excluído com sucesso.' });
