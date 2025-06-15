@@ -2,6 +2,8 @@ const pool = require('../config/db');
 const generateUUID = require('../utils/uuid');
 const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
+const path = require('path');
+const fs = require('fs');
 
 // Buscar professor pelo ID
 exports.getById = async (req, res) => {
@@ -36,6 +38,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
+// criar um professor
 exports.create = async (req, res) => {
   const { nome, email, senha, foto } = req.body;
 
@@ -80,6 +83,30 @@ exports.delete = async (req, res) => {
   }
 
   try {
+    // 1. Buscar URLs das fotos dos alunos do professor
+    const [alunos] = await pool.query(`
+      SELECT a.foto_url
+      FROM alunos a
+      JOIN classes c ON a.id_classe = c.id
+      WHERE c.id_professor = ?
+    `, [id]);
+
+    // 2. Excluir fotos do sistema de arquivos
+    alunos.forEach(aluno => {
+      if (aluno.foto_url) {
+        const nomeArquivo = aluno.foto_url.split('/').pop();
+        const caminhoFoto = path.join(__dirname, '..', 'uploads', nomeArquivo);
+        fs.unlink(caminhoFoto, err => {
+          if (err) {
+            console.warn(` Erro ao excluir foto ${nomeArquivo}:`, err.message);
+          } else {
+            console.log(`Foto ${nomeArquivo} excluída.`);
+          }
+        });
+      }
+    });
+
+    // 3. Deletar o professor (e os dados relacionados por ON DELETE CASCADE no banco)
     const [result] = await pool.query('DELETE FROM professores WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
@@ -88,7 +115,8 @@ exports.delete = async (req, res) => {
 
     res.json({ mensagem: 'Professor e todos os dados relacionados foram excluídos com sucesso.' });
   } catch (err) {
-    console.error('Erro ao deletar professor:', err);
+    console.error(' Erro ao deletar professor:', err);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 };
+
