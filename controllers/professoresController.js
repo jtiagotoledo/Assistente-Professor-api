@@ -83,7 +83,7 @@ exports.delete = async (req, res) => {
   }
 
   try {
-    // 1. Buscar URLs das fotos dos alunos do professor
+    /* // 1. Buscar URLs das fotos dos alunos do professor
     const [alunos] = await pool.query(`
       SELECT a.foto_url
       FROM alunos a
@@ -104,7 +104,7 @@ exports.delete = async (req, res) => {
           }
         });
       }
-    });
+    }); */
 
     // 3. Deletar o professor (e os dados relacionados por ON DELETE CASCADE no banco)
     const [result] = await pool.query('DELETE FROM professores WHERE id = ?', [id]);
