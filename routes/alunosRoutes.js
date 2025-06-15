@@ -3,6 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/alunosController');
 const authMiddleware = require('../middlewares/authmiddleware');
 const upload = require('../utils/upload');
+const resizeImage = require('../utils/resizeImage');
 
 router.post('/', authMiddleware, upload.single('foto'), resizeImage, controller.create);
 router.get('/:id_classe', authMiddleware, controller.getByClasse);
