@@ -11,6 +11,7 @@ const resizeImage = async (req, res, next) => {
 
   try {
     await sharp(inputPath)
+      .rotate()
       .resize({ width: 400 })
       .jpeg({ quality: 70 })
       .toFile(tempOutputPath);
