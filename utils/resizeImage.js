@@ -1,32 +1,31 @@
-const sharp = require('sharp');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 
 const resizeImage = async (req, res, next) => {
-  if (!req.file) return next(); 
+  if (!req.file) return next();
 
   const inputPath = req.file.path;
-  const outputPath = path.join(req.file.destination, 'resized-' + req.file.filename);
+  const tempOutputPath = path.join(req.file.destination, 'resized-' + req.file.filename);
+  const finalOutputPath = path.join('uploads', 'resized-' + req.file.filename);
 
-  console.log('inputPath,outputPath',inputPath,outputPath);
-  
   try {
     await sharp(inputPath)
-      .resize({ width: 400 }) 
-      .jpeg({ quality: 70 })  
-      .toFile(outputPath);
+      .resize({ width: 400 })
+      .jpeg({ quality: 70 })
+      .toFile(tempOutputPath);
 
-    // Apaga imagem original pesada
-    fs.unlinkSync(inputPath);
+    fs.unlinkSync(inputPath); // remove original temporária
 
-    // Atualiza req.file para apontar para a nova imagem
+    fs.renameSync(tempOutputPath, finalOutputPath);
+
     req.file.filename = 'resized-' + req.file.filename;
-    req.file.path = outputPath;
+    req.file.path = finalOutputPath;
 
     next();
   } catch (err) {
-    console.error('Erro ao redimensionar imagem:', err);
-    next(err);
+    console.error('❌ Erro ao redimensionar imagem:', err);
+    return res.status(500).json({ erro: 'Erro ao processar imagem' });
   }
 };
 
