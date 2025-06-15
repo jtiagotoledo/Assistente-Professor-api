@@ -1,10 +1,11 @@
+// upload.js
 const multer = require('multer');
 const path = require('path');
 
 const storage = multer.diskStorage({
-  destination: 'uploads/', 
+  destination: 'uploads/tmp/', // salva temporariamente
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
+    const uniqueName = Date.now() + '-' + file.originalname.replace(/\s/g, '_');
     cb(null, uniqueName);
   }
 });
