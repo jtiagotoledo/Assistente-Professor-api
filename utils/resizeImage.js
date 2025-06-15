@@ -8,6 +8,8 @@ const resizeImage = async (req, res, next) => {
   const inputPath = req.file.path;
   const outputPath = path.join(req.file.destination, 'resized-' + req.file.filename);
 
+  console.log('inputPath,outputPath',inputPath,outputPath);
+  
   try {
     await sharp(inputPath)
       .resize({ width: 400 }) 
