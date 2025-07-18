@@ -40,7 +40,42 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.importarEmLote = async (req, res) => {
+  const { alunos } = req.body;
 
+  if (!Array.isArray(alunos) || alunos.length === 0) {
+    return res.status(400).json({ erro: 'É necessário enviar um array com os alunos.' });
+  }
+
+  try {
+    const valores = alunos.map(aluno => {
+      const id = generateUUID();
+
+      return [
+        id,
+        aluno.numero,
+        aluno.nome,
+        aluno.inativo || false,
+        aluno.media_notas ?? null,
+        aluno.porc_frequencia ?? null,
+        aluno.id_classe,
+        null // foto_url (não usamos aqui)
+      ];
+    });
+
+    await pool.query(
+      `INSERT INTO alunos 
+        (id, numero, nome, inativo, media_notas, porc_frequencia, id_classe, foto_url) 
+       VALUES ?`,
+      [valores]
+    );
+
+    res.status(201).json({ mensagem: 'Alunos importados com sucesso.', quantidade: valores.length });
+  } catch (err) {
+    console.error('Erro ao importar alunos em lote:', err);
+    res.status(500).json({ erro: 'Erro interno ao importar alunos.' });
+  }
+};
 
 // Buscar alunos por classe
 exports.getByClasse = async (req, res) => {

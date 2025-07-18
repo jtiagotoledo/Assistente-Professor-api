@@ -6,6 +6,7 @@ const upload = require('../utils/upload');
 const resizeImage = require('../utils/resizeImage');
 
 router.post('/', authMiddleware, upload.single('foto'), resizeImage, controller.create);
+router.post('/importar', authMiddleware, controller.importarEmLote);
 router.get('/:id_classe', authMiddleware, controller.getByClasse);
 router.put('/:id', authMiddleware, controller.update);
 router.delete('/:id', authMiddleware, controller.delete);
