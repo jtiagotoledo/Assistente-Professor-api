@@ -161,3 +161,58 @@ exports.delete = async (req, res) => {
     res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 };
+
+// Atualizar apenas a foto do aluno
+exports.updateFoto = async (req, res) => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json({ erro: 'Nenhuma foto enviada.' });
+  }
+
+  try {
+    // Buscar a URL antiga da foto
+    const [rows] = await pool.query('SELECT foto_url FROM alunos WHERE id = ?', [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: 'Aluno não encontrado.' });
+    }
+
+    const fotoAntiga = rows[0].foto_url;
+
+    // Gerar nova URL da foto
+    const novaFotoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+    // Atualizar a URL da foto no banco
+    const [result] = await pool.query(
+      'UPDATE alunos SET foto_url = ? WHERE id = ?',
+      [novaFotoUrl, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ erro: 'Aluno não encontrado para atualização.' });
+    }
+
+    // Excluir a foto antiga do disco, se existir
+    if (fotoAntiga) {
+      const nomeArquivoAntigo = fotoAntiga.split('/').pop();
+      const caminhoAntigo = path.join(__dirname, '..', 'uploads', nomeArquivoAntigo);
+
+      fs.unlink(caminhoAntigo, (err) => {
+        if (err) {
+          console.warn('⚠️ Erro ao excluir foto antiga:', err.message);
+        } else {
+          console.log('🗑️ Foto antiga excluída:', nomeArquivoAntigo);
+        }
+      });
+    }
+
+    res.json({ mensagem: 'Foto atualizada com sucesso.', foto_url: novaFotoUrl });
+  } catch (err) {
+    console.error('Erro ao atualizar a foto do aluno:', err);
+    res.status(500).json({ erro: 'Erro interno ao atualizar a foto.' });
+  }
+};
+
+
+
