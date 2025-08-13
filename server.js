@@ -1,7 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const https = require('https');
-const fs = require('fs');
 const cors = require('cors');
 const app = express();
 const path = require('path');
@@ -24,18 +22,11 @@ app.use('/frequencias', require('./routes/frequenciasRoutes'));
 app.use('/notas', require('./routes/notasRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 app.get('/', (req, res) => {
-  res.send('🔐 API com HTTPS funcionando!');
+  res.send('🔐 API rodando com Nginx como proxy HTTPS!');
 });
 
-// Certificados SSL
-const options = {
-  key: fs.readFileSync('/etc/ssl/duckdns/key.pem'),
-  cert: fs.readFileSync('/etc/ssl/duckdns/fullchain.pem'),
-};
-
-// Iniciar servidor HTTPS
-https.createServer(options, app).listen(3000, () => {
-  console.log('Servidor rodando em https://assistente-professor.duckdns.org:3000');
+// Apenas HTTP na porta interna
+app.listen(3000, () => {
+  console.log('Servidor Node rodando em http://localhost:3000');
 });
