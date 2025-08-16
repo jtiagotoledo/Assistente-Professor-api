@@ -95,3 +95,15 @@ CREATE TABLE IF NOT EXISTS notas (
     INDEX idx_notas_id_data_nota (id_data_nota),
     INDEX idx_notas_id_aluno (id_aluno)
 );
+
+--10. Mapa Sala
+CREATE TABLE IF NOT EXISTS mapa_sala (
+    id CHAR(36) PRIMARY KEY,
+    id_classe CHAR(36) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    colunas INT NOT NULL,
+    fileiras INT NOT NULL,
+    assentos JSON NOT NULL,
+    FOREIGN KEY (id_classe) REFERENCES classes(id) ON DELETE CASCADE,
+    INDEX idx_planos_de_sala_id_classe (id_classe)
+);
