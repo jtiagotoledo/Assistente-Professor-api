@@ -23,7 +23,7 @@ app.use('/datas-notas', require('./routes/datasNotasRoutes'));
 app.use('/frequencias', require('./routes/frequenciasRoutes'));
 app.use('/notas', require('./routes/notasRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/mapa-sala', require('./routes/mapaSalaRoutes'));
 
 app.get('/', (req, res) => {
   res.send('🔐 API com HTTPS funcionando!');
