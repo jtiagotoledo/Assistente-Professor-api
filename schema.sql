@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS notas (
     INDEX idx_notas_id_aluno (id_aluno)
 );
 
---10. Mapa Sala
+-- 10. Mapa Sala
 CREATE TABLE IF NOT EXISTS mapa_sala (
     id CHAR(36) PRIMARY KEY,
     id_classe CHAR(36) NOT NULL,
