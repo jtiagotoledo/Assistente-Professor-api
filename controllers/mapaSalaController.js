@@ -40,11 +40,10 @@ exports.salvarOuAtualizar = async (req, res) => {
     }
 };
 
-// Função para buscar o plano de sala de uma classe específica (o mais recente ou por nome, se houver múltiplos)
+// Função para buscar o plano de sala de uma classe específica
 exports.getByClasseId = async (req, res) => {
     const { id_classe } = req.params;
-    // Você pode adicionar um parâmetro de query para 'nome' se quiser buscar um mapa específico pelo nome
-    const { nome } = req.query; 
+    const { nome } = req.query;
 
     try {
         let query = 'SELECT colunas, fileiras, assentos FROM mapa_sala WHERE id_classe = ?';
@@ -54,15 +53,13 @@ exports.getByClasseId = async (req, res) => {
             query += ' AND nome = ?';
             params.push(nome);
         } else {
-            // Se não for especificado um nome, busca o mais recente (se você tiver uma coluna de timestamp)
-            // Ou o primeiro que encontrar, dependendo da sua regra de negócio
-            query += ' ORDER BY atualizado_em DESC LIMIT 1'; // Assumindo que você adicionará 'atualizado_em'
+            // Se o nome não for especificado, busca o primeiro que encontrar
+            query += ' LIMIT 1';
         }
 
         const [results] = await pool.query(query, params);
 
         if (results.length > 0) {
-            // O campo 'assentos' é retornado como string JSON, precisa ser parseado no front-end
             res.json(results[0]);
         } else {
             res.status(404).json({ message: 'Mapa de sala não encontrado para esta classe.' });
