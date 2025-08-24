@@ -53,14 +53,18 @@ exports.getByClasseId = async (req, res) => {
             query += ' AND nome = ?';
             params.push(nome);
         } else {
-            // Se o nome não for especificado, busca o primeiro que encontrar
             query += ' LIMIT 1';
         }
 
         const [results] = await pool.query(query, params);
 
         if (results.length > 0) {
-            res.json(results[0]);
+            const mapaDeSala = results[0];
+            
+            // Faz o parsing da string JSON para um objeto no back-end
+            mapaDeSala.assentos = JSON.parse(mapaDeSala.assentos);
+            
+            res.json(mapaDeSala);
         } else {
             res.status(404).json({ message: 'Mapa de sala não encontrado para esta classe.' });
         }
