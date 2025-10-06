@@ -167,7 +167,7 @@ exports.esqueciSenha = async (req, res) => {
       html: `
         <p>Olá, ${professor.nome}!</p>
         <p>Você solicitou a redefinição da sua senha. Clique no link abaixo para criar uma nova:</p>
-        <a href="${link}">${link}</a>
+        <a href="${link}" style="color: #1a73e8; text-decoration: underline;">Clique aqui para redefinir sua senha</a>
         <p>Este link expira em 15 minutos.</p>
       `,
     });
