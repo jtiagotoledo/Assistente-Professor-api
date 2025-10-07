@@ -177,3 +177,33 @@ exports.esqueciSenha = async (req, res) => {
     res.status(500).json({ erro: 'Erro ao enviar email.' });
   }
 };
+
+exports.redirecionarRedefinicaoSenha = (req, res) => {
+  const token = req.query.token;
+
+  if (!token) {
+    return res.status(400).send('Token não fornecido.');
+  }
+
+  const deepLink = `assistenteprofessor://redefinir-senha/${token}`;
+
+  res.send(`
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Redirecionando...</title>
+        <script>
+          window.location.href = "${deepLink}";
+          setTimeout(() => {
+            // Caso o usuário não tenha o app, redireciona para Play Store ou página informativa
+            window.location.href = "https://play.google.com/store/apps/details?id=com.apolotecnologia.assistenteprofessor";
+          }, 2000);
+        </script>
+      </head>
+      <body>
+        <p>Redirecionando para o app...</p>
+      </body>
+    </html>
+  `);
+};
+
