@@ -146,12 +146,11 @@ exports.esqueciSenha = async (req, res) => {
     const token = jwt.sign(
       { id: professor.id, email: professor.email },
       process.env.RESET_PASSWORD_SECRET,
-      { expiresIn: '15m' } // token válido por 15 minutos
+      { expiresIn: '15m' } 
     );
 
-    const link = `${process.env.FRONTEND_URL}/redefinir-senha/${token}`;
+    const link = `https://assistente-professor.duckdns.org:3000/auth/redefinir-senha?token=${token}`;
 
-    // Configure o transporter (exemplo com Gmail e senha de app)
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -166,8 +165,8 @@ exports.esqueciSenha = async (req, res) => {
       subject: 'Redefinição de senha',
       html: `
         <p>Olá, ${professor.nome}!</p>
-        <p>Você solicitou a redefinição da sua senha. Clique no link abaixo para criar uma nova:</p>
-        <a href="${link}" style="color: #1a73e8; text-decoration: underline;">Clique aqui para redefinir sua senha</a>
+        <p>Você solicitou a redefinição da sua senha.</p>
+        <p><a href="${link}" style="color: #1a73e8; text-decoration: underline;">Clique aqui para redefinir sua senha</a></p>
         <p>Este link expira em 15 minutos.</p>
       `,
     });
