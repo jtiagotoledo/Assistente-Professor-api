@@ -207,3 +207,43 @@ exports.redirecionarRedefinicaoSenha = (req, res) => {
   `);
 };
 
+exports.redefinirSenha = async (req, res) => {
+  const { token, novaSenha } = req.body;
+
+  if (!token || !novaSenha) {
+    return res.status(400).json({ erro: 'Token e nova senha são obrigatórios.' });
+  }
+
+  try {
+    // Verifica o token
+    const payload = jwt.verify(token, process.env.RESET_PASSWORD_SECRET);
+
+    const [results] = await pool.query('SELECT * FROM professores WHERE id = ?', [payload.id]);
+
+    if (results.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    const professor = results[0];
+
+    // Não permite redefinir senha de login via Google
+    if (professor.senha === 'GOOGLE_AUTH') {
+      return res.status(400).json({ erro: 'Usuários do Google não podem alterar a senha local.' });
+    }
+
+    // Criptografa a nova senha
+    const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+    await pool.query('UPDATE professores SET senha = ? WHERE id = ?', [novaSenhaHash, professor.id]);
+
+    res.json({ mensagem: 'Senha alterada com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao redefinir senha:', err);
+
+    if (err.name === 'TokenExpiredError') {
+      return res.status(400).json({ erro: 'Token expirado.' });
+    }
+
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+};
