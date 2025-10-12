@@ -59,7 +59,7 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const userPayload = {
       id: decoded.id,
