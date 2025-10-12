@@ -74,6 +74,23 @@ exports.getByClasseId = async (req, res) => {
     }
 };
 
+//manter o mapa mas limpar os registros de assentos
+exports.limparAssentos = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM mapa_assentos WHERE mapa_id = ?',
+      [id]
+    );
+
+    res.status(200).json({ message: 'Assentos removidos com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao limpar assentos:', err);
+    res.status(500).json({ message: 'Erro interno ao limpar assentos.' });
+  }
+};
+
 // Opcional: Função para deletar um mapa de sala
 exports.delete = async (req, res) => {
     const { id } = req.params; // ID do mapa de sala a ser deletado
