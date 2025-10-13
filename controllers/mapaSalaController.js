@@ -75,16 +75,22 @@ exports.getByClasseId = async (req, res) => {
 };
 
 //manter o mapa mas limpar os registros de assentos
+const pool = require('../db'); // certifique-se de importar o pool de conexão
+
 exports.limparAssentos = async (req, res) => {
-  const { id } = req.params; 
+  const { id } = req.params; // id = id da classe
 
   try {
     const [result] = await pool.query(
-      'DELETE FROM mapa_assentos WHERE mapa_id = ?',
-      [id]
+      'UPDATE mapa_sala SET assentos = ? WHERE id_classe = ?',
+      [JSON.stringify([]), id]
     );
 
-    res.status(200).json({ message: 'Assentos removidos com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Mapa de sala não encontrado para esta classe.' });
+    }
+
+    res.status(200).json({ message: 'Assentos limpos com sucesso.' });
   } catch (err) {
     console.error('Erro ao limpar assentos:', err);
     res.status(500).json({ message: 'Erro interno ao limpar assentos.' });

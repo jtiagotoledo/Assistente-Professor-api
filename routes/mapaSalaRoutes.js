@@ -5,6 +5,6 @@ const authMiddleware = require('../middlewares/authmiddleware');
 
 router.post('/', authMiddleware, mapaSalaController.salvarOuAtualizar);
 router.get('/:id_classe', authMiddleware, mapaSalaController.getByClasseId);
-router.delete('/:id/assentos', mapaSalaController.limparAssentos);
+router.put('/:id/assentos', authMiddleware, mapaSalaController.limparAssentos);
 
 module.exports = router;
