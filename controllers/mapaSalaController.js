@@ -75,8 +75,6 @@ exports.getByClasseId = async (req, res) => {
 };
 
 //manter o mapa mas limpar os registros de assentos
-const pool = require('../db'); // certifique-se de importar o pool de conexão
-
 exports.limparAssentos = async (req, res) => {
   const { id } = req.params; // id = id da classe
 
