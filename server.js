@@ -26,16 +26,17 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/mapa-sala', require('./routes/mapaSalaRoutes'));
 
 app.get('/', (req, res) => {
-  res.send('🔐 API com HTTPS funcionando!');
+  res.send('API Node rodando internamente na porta 3001');
 });
 
 // Certificados SSL
-const options = {
+/* const options = {
   key: fs.readFileSync('/etc/nginx/ssl/assistente-professor.duckdns.org.key'),
   cert: fs.readFileSync('/etc/nginx/ssl/fullchain.cer'),
-};
+}; */
 
 // Iniciar servidor HTTPS
-https.createServer(options, app).listen(3000, () => {
-  console.log('Servidor rodando em https://assistente-professor.duckdns.org:3000');
+app.listen(3001, () => {
+  console.log('Servidor Node rodando na porta 3001');
 });
+
